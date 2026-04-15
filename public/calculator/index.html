@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera Storage Calculator | Produtora Lumos</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700;800&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* CSS Variables for Dual Theme */
+        :root {
+            /* Shared Colors */
+            --lumos-gold: #EFC700;
+            --lumos-gold-light: #F5D87A;
+            --lumos-gradient: linear-gradient(135deg, #EFC700 0%, #F5D87A 40%, #FFFFFF 100%);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Theme Dependent Variables (Default Dark) */
+            --bg-primary: #222222;
+            --bg-panel: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #8a8884;
+            --text-muted: #5a5855;
+            --accent: #EFC700;
+            --border: rgba(255, 255, 255, 0.06);
+            --select-bg: #333333;
+            --select-hover: #3d3d3d;
+            --panel-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            --result-bg: rgba(255, 255, 255, 0.03);
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #F5F5F3;
+            --bg-panel: #ffffff;
+            --text-primary: #1c1b1a;
+            --text-secondary: #6b6866;
+            --text-muted: #9a9896;
+            --accent: #C9A700; /* Darker gold for light mode contrast */
+            --border: rgba(0, 0, 0, 0.08);
+            --select-bg: #f3f1ed;
+            --select-hover: #e8e5df;
+            --panel-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            --result-bg: rgba(0, 0, 0, 0.02);
+            --lumos-gradient: linear-gradient(135deg, #C9A700 0%, #EFC700 40%, #1c1b1a 100%);
+        }
+
+        /* Reset & Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Work Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        h1, h2, h3, .brand {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 62.5rem;
+            margin: 0 auto;
+            padding: clamp(1rem, 4vw, 2rem);
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1rem clamp(1rem, 4vw, 2.5rem);
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-panel);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-box {
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .logo-box svg {
+            height: 100%;
+            width: auto;
+        }
+
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        /* Toggles */
+        .btn-toggle {
+            background: var(--select-bg);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            min-width: 2.75rem;
+            min-height: 2.75rem;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn-toggle:hover {
+            background: var(--select-hover);
+            border-color: var(--accent);
+        }
+
+        .lang-switcher {
+            display: flex;
+            background: var(--select-bg);
+            padding: 0.125rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 0.5rem 0.75rem;
+            min-height: 2.75rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 0.375rem;
+            transition: var(--transition);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .lang-btn.active {
+            background: var(--accent);
+            color: #000;
+        }
+
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: clamp(2rem, 6vw, 4rem) 1rem;
+        }
+
+        .hero h1 {
+            font-size: clamp(1.75rem, 5vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.02em;
+        }
+
+        .hero h1 span.gradient {
+            background: var(--lumos-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: var(--accent); /* fallback */
+        }
+
+        .hero p {
+            color: var(--text-secondary);
+            font-size: clamp(0.95rem, 2.5vw, 1.25rem);
+            max-width: 37.5rem;
+            margin: 0 auto;
+        }
+
+        /* Main Card */
+        .calc-card {
+            background: var(--bg-panel);
+            border-radius: clamp(1rem, 3vw, 1.5rem);
+            padding: clamp(1.25rem, 4vw, 3rem);
+            border: 1px solid var(--border);
+            box-shadow: var(--panel-shadow);
+            margin-bottom: 2rem;
+        }
+
+        .selectors-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: clamp(1rem, 3vw, 2rem);
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .label-pill {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+            margin-left: 0.25rem;
+        }
+
+        select {
+            width: 100%;
+            background-color: var(--select-bg);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.875rem 2.75rem 0.875rem 1rem;
+            border-radius: 0.875rem;
+            font-family: inherit;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgba(138,136,132,0.8)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.875rem center;
+            background-size: 1.2rem;
+            min-height: 2.75rem;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 0.25rem rgba(239, 199, 0, 0.1);
+        }
+
+        select:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        optgroup {
+            font-weight: 700;
+            background: var(--bg-panel);
+            color: var(--accent);
+            padding: 0.5rem;
+        }
+
+        option {
+            background: var(--bg-panel);
+            color: var(--text-primary);
+            font-weight: normal;
+        }
+
+        /* Compatible media hint */
+        .media-hint {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+            margin-left: 0.25rem;
+            display: none;
+            line-height: 1.4;
+        }
+
+        .media-hint.visible {
+            display: block;
+        }
+
+        /* Results Display */
+        .results-panel {
+            display: none; /* JS toggles */
+            margin-top: 1.5rem;
+            background: var(--result-bg);
+            border-radius: 1.125rem;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            animation: slideUp 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(1.25rem); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .recording-time-main {
+            padding: clamp(1.5rem, 5vw, 3rem) 1rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .res-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .res-time {
+            font-size: clamp(2.25rem, 10vw, 4.5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            font-family: 'Poppins', sans-serif;
+            margin: 0.5rem 0;
+            word-break: break-word;
+            overflow-wrap: break-word;
+        }
+
+        [data-theme="dark"] .res-time {
+            background: var(--lumos-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: var(--accent); /* fallback */
+        }
+
+        [data-theme="light"] .res-time {
+            color: var(--text-primary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            background: rgba(0,0,0,0.05);
+        }
+
+        .stat-item {
+            padding: clamp(0.75rem, 2vw, 1.5rem);
+            text-align: center;
+            border-right: 1px solid var(--border);
+        }
+
+        .stat-item:last-child { border-right: none; }
+
+        .stat-val {
+            font-weight: 600;
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            display: block;
+        }
+
+        .stat-lab {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+        }
+
+        .results-footer {
+            padding: 1rem clamp(1rem, 3vw, 2rem);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            background: rgba(0,0,0,0.1);
+        }
+
+        .badge {
+            background: var(--accent);
+            color: #000;
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            font-weight: 700;
+            font-size: 0.75rem;
+        }
+
+        /* Warnings */
+        .warning-container {
+            margin-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .banner {
+            padding: 0.875rem 1rem;
+            border-radius: 0.75rem;
+            font-size: 0.85rem;
+            display: none;
+            align-items: flex-start;
+            gap: 0.5rem;
+            line-height: 1.5;
+        }
+
+        .banner.warning {
+            background: rgba(239, 199, 0, 0.1);
+            border: 1px solid rgba(239, 199, 0, 0.2);
+            color: var(--accent);
+        }
+
+        .banner.info {
+            background: rgba(0, 150, 255, 0.1);
+            border: 1px solid rgba(0, 150, 255, 0.2);
+            color: #58a6ff;
+        }
+
+        /* Custom Input */
+        .custom-size-box {
+            display: none;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border);
+            animation: fadeIn 0.3s ease;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .custom-size-box.visible {
+            display: flex;
+        }
+
+        .custom-size-box input {
+            background: var(--select-bg);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+            padding: 0.75rem 1rem;
+            border-radius: 0.625rem;
+            width: 100%;
+            max-width: 10rem;
+            font-family: inherit;
+            font-size: 1rem;
+            min-height: 2.75rem;
+        }
+
+        .custom-size-box input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; } to { opacity: 1; }
+        }
+
+        /* Footer */
+        footer {
+            margin-top: auto;
+            padding: clamp(2rem, 5vw, 4rem) clamp(1rem, 4vw, 2rem);
+            text-align: center;
+            border-top: 1px solid var(--border);
+            background: var(--bg-panel);
+        }
+
+        .disclaimer {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            max-width: 43.75rem;
+            margin: 0 auto 1rem;
+        }
+
+        .lumos-credit {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .lumos-credit strong {
+            color: var(--accent);
+        }
+
+        /* ========================================
+           RESPONSIVE BREAKPOINTS
+           ======================================== */
+        
+        /* Tablet & below (< 768px) */
+        @media (max-width: 48rem) {
+            .selectors-grid {
+                grid-template-columns: 1fr;
+                gap: 1.25rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-item {
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .stat-item:last-child {
+                border-bottom: none;
+            }
+
+            .results-footer {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+        }
+
+        /* Mobile (< 430px) */
+        @media (max-width: 26.875rem) {
+            header {
+                padding: 0.75rem 1rem;
+            }
+
+            .logo-box {
+                height: 1.5rem;
+            }
+
+            .hero {
+                padding: 1.5rem 0.5rem;
+            }
+
+            .calc-card {
+                border-radius: 1rem;
+            }
+
+            .lang-btn {
+                padding: 0.4rem 0.6rem;
+                font-size: 0.7rem;
+            }
+        }
+
+    </style>
+</head>
+<body data-theme="dark">
+
+    <header>
+        <div class="logo-box" id="lumos-logo">
+            <!-- SVG injected via JS -->
+        </div>
+        
+        <div class="header-controls">
+            <div class="lang-switcher">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="pt">PT</button>
+                <button class="lang-btn" data-lang="es">ES</button>
+            </div>
+            
+            <button class="btn-toggle" id="theme-toggle" title="Toggle Theme">
+                <svg id="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <h1>Camera <span class="gradient">Storage</span> Calculator</h1>
+            <p data-i18n="subtitle">Precise recording time estimates for cinema and mirrorless workflows.</p>
+        </section>
+
+        <section class="calc-card">
+            <div class="selectors-grid">
+                <!-- Camera -->
+                <div class="form-group">
+                    <label class="label-pill" data-i18n="selectCamera">Select Camera</label>
+                    <select id="select-camera">
+                        <option value="" disabled selected>—</option>
+                        <optgroup label="🎬 Sony Cinema Line" id="sony-cinema"></optgroup>
+                        <optgroup label="📷 Sony Alpha / ZV" id="sony-alpha"></optgroup>
+                        <optgroup label="🎥 Blackmagic Design" id="blackmagic"></optgroup>
+                    </select>
+                </div>
+
+                <!-- Resolution -->
+                <div class="form-group">
+                    <label class="label-pill" data-i18n="selectResolution">Select Resolution</label>
+                    <select id="select-res" disabled>
+                        <option value="" disabled selected>—</option>
+                    </select>
+                </div>
+
+                <!-- FPS -->
+                <div class="form-group">
+                    <label class="label-pill" data-i18n="selectFps">Select Frame Rate</label>
+                    <select id="select-fps" disabled>
+                        <option value="" disabled selected>—</option>
+                    </select>
+                </div>
+
+                <!-- Codec -->
+                <div class="form-group">
+                    <label class="label-pill" data-i18n="selectCodec">Select Codec</label>
+                    <select id="select-codec" disabled>
+                        <option value="" disabled selected>—</option>
+                    </select>
+                </div>
+
+                <!-- Bitrate -->
+                <div class="form-group">
+                    <label class="label-pill" data-i18n="selectBitrate">Select Bitrate / Quality</label>
+                    <select id="select-bitrate" disabled>
+                        <option value="" disabled selected>—</option>
+                    </select>
+                </div>
+
+                <!-- Storage -->
+                <div class="form-group" id="storage-group">
+                    <label class="label-pill" data-i18n="selectStorage">Select Storage Size</label>
+                    <select id="select-storage">
+                        <option value="" disabled selected>—</option>
+                        <!-- Populated dynamically by JS based on camera -->
+                    </select>
+                    <div class="media-hint" id="media-hint"></div>
+                    
+                    <div class="custom-size-box" id="custom-size-container">
+                        <input type="number" id="custom-gb" placeholder="Size in GB" min="1">
+                        <span class="label-pill">Gigabytes</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Warnings -->
+            <div class="warning-container" id="warnings">
+                <!-- Banners injected by JS -->
+            </div>
+
+            <!-- Helper Message -->
+            <div id="status-msg" style="text-align: center; color: var(--text-muted); padding: 1.5rem 0;">
+                <p data-i18n="selectAll">Select all parameters to see recording time.</p>
+            </div>
+
+            <!-- Results Panel -->
+            <div class="results-panel" id="results">
+                <div class="recording-time-main">
+                    <span class="res-label" data-i18n="recordingTime">Recording Time</span>
+                    <div class="res-time" id="val-time">0h 00m 00s</div>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-lab" data-i18n="dataRate">Data Rate</span>
+                        <span class="stat-val" id="val-datarate">0 MB/s</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-lab" data-i18n="perMinute">Per Minute</span>
+                        <span class="stat-val" id="val-perminute">0 MB</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-lab" data-i18n="perHour">Per Hour</span>
+                        <span class="stat-val" id="val-perhour">0 GB</span>
+                    </div>
+                </div>
+
+                <div class="results-footer">
+                    <div>
+                        <span data-i18n="storageUsed">Storage</span>: <span id="val-card">128 GB</span>
+                    </div>
+                    <div>
+                        <span data-i18n="minCard">Min. Required</span>: <span class="badge" id="val-badge">V60</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p class="disclaimer" id="footer-text">This is an unofficial calculator tool based on manufacturer documentation. Built by Produtora Lumos.</p>
+        <p class="lumos-credit">Developed by <strong>Produtora Lumos</strong></p>
+    </footer>
+
+    <script>
+        // --- DATA & CONFIG ---
+        const SVGS = {
+            dark: `<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 919.87 175.9"><defs><style>.ls1{fill:none;}.ls2{fill:url(#l1);}.ls3{fill:#fff;}.ls4{fill:#efc700;}.ls5{clip-path:url(#cp1);}</style><clipPath id="cp1"><rect class="ls1" y=".07" width="175.76" height="175.76" rx="28.46" ry="28.46"/></clipPath><linearGradient id="l1" x1="-153.39" y1="130.57" x2="166.77" y2="130.57" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity=".9"/></linearGradient></defs><g id="Layer_3" data-name="Layer 3"><g id="Layer_5" data-name="Layer 5"><g><path class="ls3" d="M240.81,175.17c-1.25.84-2.24-.16-2.24-1.4l1.25-84.93-1.25-86.6c0-1.25,1-2.24,2.24-2.24h34.12c1.25,0,2.24,1,2.24,2.24l-1,84.36,1,61.27h101.7c1.25,0,2.24,1,2.24,2.24v23.66c0,1.24-1,2.24-2.24,1.4h-138.06Z"/><path class="ls3" d="M376.2,175.65c-27.15,0-44.83-18.43-44.83-49.81v-26.9l-.5-52.3c0-1.25,1-2.24,2.24-2.24h33.37c1.25,0,2.24,1,2.24,2.24l-.75,52.3v26.4c0,13.95,8.47,22.91,19.68,22.91,13.45,0,27.89-12.45,27.89-39.85v-9.46 l-.5-52.3c0-1.25,1-2.24,2.24-2.24h33.37c1.25,0,2.24,1,2.24,2.24l-.75,59.27.25,64.5c0,1.24-1,2.24-2.24,2.24h-31.63c-1.25,0-2.24-1-2.24-2.24l.75-13.95c-8.72,11.21-23.41,19.18-41.34,19.18Z"/><path class="ls3" d="M502.71,126.59l.75,43.83c0,1.24-1,2.24-2.24,2.24h-34.12c-1.25,0-2.24-1-2.24-2.24l.75-43.83-.25-79.95c0-1.25,1-2.24,2.24-2.24h31.88c1.25,0,2.24,1,2.24,2.24l-.75,13.95 c8.97-12.45,20.42-19.18,36.86-19.18,17.93,0,30.63,7.72,36.61,24.16,10.96-19.43,23.91-24.16,39.1-24.16,25.9,0,40.84,15.69,40.84,49.81v35.37l.5,43.83c0,1.24-1,2.24-2.24,2.24h-33.62c-1.24,0-2.24-1-2.24-2.24l.75-43.83v-34.87c0-15.44-6.23-22.91-16.44-22.91s-22.66,13.7-22.66,39.85v17.93l.75,43.83c0,1.24-1,2.24-2.24,2.24h-33.62c-1.25,0-2.24-1-2.24-2.24l.75-43.83v-34.87c0-15.44-5.98-22.91-16.44-22.91s-22.66,13.7-22.66,39.85v17.93Z"/><path class="ls3" d="M728.35,175.9c-41.84,0-66-26.15-66-67s24.16-67.74,66-67.74,65.5,26.15,65.5,67-23.66,67.74-65.5,67.74ZM728.35,150.99c18.43,0,27.15-12.7,27.15-42.09s-8.97-42.84-27.4-42.84c-18.93.25-27.64,14.2-27.64,43.09s9.21,41.84,27.89,41.84Z"/><path class="ls3" d="M859.85,175.65c-37.36,0-61.27-15.19-62.51-43.83,0-1.24,1-2.24,2.24-2.24h31.88c1.25,0,2.24,1,2.24,2.24,1,14.45,10.46,20.67,27.89,20.67,14.69,0,22.66-5.73,22.66-15.69,0-24.41-83.93-.75-83.93-54.54,0-26.65,21.42-40.84,56.04-40.84s56.29,13.45,58.53,40.35c.25,1.25-.75,2.24-1.99,2.24h-30.38c-1.24,0-2.24-1-2.49-2.24-1.99-10.96-8.97-17.68-24.16-17.68-12.2,0-19.93,4.48-19.93,15.44,0,24.41,83.93-.5,83.93,54.04,0,26.9-25.4,42.09-60.02,42.09Z"/><g><rect class="ls4" y=".07" width="175.76" height="175.76" rx="28.46" ry="28.46"/><g class="ls5"><path class="ls2" d="M166.77,6.27l-36.48,205.19c-5.09,28.6-32.4,47.67-61,42.58l-222.68-39.59"/></g></g></g></g></g></svg>`,
+            light: `<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 919.87 175.9"><defs><style>.ls1{fill:none;}.ls2{fill:url(#l1);}.ls3{clip-path:url(#cp1);}.ls4{fill:#161616;}</style><clipPath id="cp1"><rect class="ls1" y=".07" width="175.76" height="175.76" rx="28.46" ry="28.46"/></clipPath><linearGradient id="l1" x1="-153.39" y1="130.57" x2="166.77" y2="130.57" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#ffd900" stop-opacity="0"/><stop offset="1" stop-color="#ffd900" stop-opacity=".9"/></linearGradient></defs><g id="Layer_3" data-name="Layer 3"><g><path class="ls4" d="M240.81,175.17c-1.25.84-2.24-.16-2.24-1.4l1.25-84.93-1.25-86.6c0-1.25,1-2.24,2.24-2.24h34.12c1.25,0,2.24,1,2.24,2.24l-1,84.36,1,61.27h101.7c1.25,0,2.24,1,2.24,2.24v23.66c0,1.24-1,2.24-2.24,1.4h-138.06Z"/><path class="ls4" d="M376.2,175.65c-27.15,0-44.83-18.43-44.83-49.81v-26.9l-.5-52.3c0-1.25,1-2.24,2.24-2.24h33.37c1.25,0,2.24,1,2.24,2.24l-.75,52.3v26.4c0,13.95,8.47,22.91,19.68,22.91,13.45,0,27.89-12.45,27.89-39.85v-9.46l-.5-52.3c0-1.25,1-2.24,2.24-2.24h33.87c1.25,0,2.24,1,2.24,2.24l-.75,59.27.25,64.5c0,1.24-1,2.24-2.24,2.24h-31.63c-1.25,0-2.24-1-2.24-2.24l.75-13.95c-8.72,11.21-23.41,19.18-41.34,19.18Z"/><path class="ls4" d="M502.71,126.59l.75,43.83c0,1.24-1,2.24-2.24,2.24h-34.12c-1.25,0-2.24-1-2.24-2.24l.75-43.83-.25-79.95c0-1.25,1-2.24,2.24-2.24h31.88c1.25,0,2.24,1,2.24,2.24l-.75,13.95c8.97-12.45,20.42-19.18,36.86-19.18,17.93,0,30.63,7.72,36.61,24.16,10.96-19.43,23.91-24.16,39.1-24.16,25.9,0,40.84,15.69,40.84,49.81v35.37l.5,43.83c0,1.24-1,2.24-2.24,2.24h-33.62c-1.24,0-2.24-1-2.24-2.24l.75-43.83v-34.87c0-15.44-6.23-22.91-16.44-22.91s-22.66,13.7-22.66,39.85v17.93l.75,43.83c0,1.24-1,2.24-2.24,2.24h-33.62c-1.25,0-2.24-1-2.24-2.24l.75-43.83v-34.87c0-15.44-5.98-22.91-16.44-22.91s-22.66,13.7-22.66,39.85v17.93Z"/><path class="ls4" d="M728.35,175.9c-41.84,0-66-26.15-66-67s24.16-67.74,66-67.74,65.5,26.15,65.5,67-23.66,67.74-65.5,67.74ZM728.35,150.99c18.43,0,27.15-12.7,27.15-42.09s-8.97-42.84-27.4-42.84c-18.93.25-27.64,14.2-27.64,43.09s9.21,41.84,27.89,41.84Z"/><path class="ls4" d="M859.85,175.65c-37.36,0-61.27-15.19-62.51-43.83,0-1.24,1-2.24,2.24-2.24h31.88c1.25,0,2.24,1,2.24,2.24,1,14.45,10.46,20.67,27.89,20.67,14.69,0,22.66-5.73,22.66-15.69,0-24.41-83.93-.75-83.93-54.54,0-26.65,21.42-40.84,56.04-40.84s56.29,13.45,58.53,40.35c.25,1.25-.75,2.24-1.99,2.24h-30.38c-1.24,0-2.24-1-2.49-2.24-1.99-10.96-8.97-17.68-24.16-17.68-12.2,0-19.93,4.48-19.93,15.44,0,24.41,83.93-.5,83.93,54.04,0,26.9-25.4,42.09-60.02,42.09Z"/><g><rect class="ls4" y=".07" width="175.76" height="175.76" rx="28.46" ry="28.46"/><g class="ls3"><path class="ls2" d="M166.77,6.27l-36.48,205.19c-5.09,28.6-32.4,47.67-61,42.58l-222.68-39.59"/></g></g></g></g></svg>`
+        };
+
+        const cameras = [
+            // Sony Cinema
+            { id: 'fx3', name: 'Sony FX3', group: 'sony-cinema' },
+            { id: 'fx30', name: 'Sony FX30', group: 'sony-cinema' },
+            { id: 'fx6', name: 'Sony FX6', group: 'sony-cinema' },
+            // Sony Alpha
+            { id: 'a7cii', name: 'Sony A7C II', group: 'sony-alpha' },
+            { id: 'a6700', name: 'Sony a6700', group: 'sony-alpha' },
+            { id: 'zve10ii', name: 'Sony ZV-E10 II', group: 'sony-alpha' },
+            { id: 'a6400', name: 'Sony a6400', group: 'sony-alpha' },
+            { id: 'a7iii', name: 'Sony A7 III', group: 'sony-alpha' },
+            { id: 'a7riv', name: 'Sony A7R IV', group: 'sony-alpha' },
+            // Blackmagic Design
+            { id: 'bmpcc4k',        name: 'Pocket 4K',                    group: 'blackmagic' },
+            { id: 'bmpcc6k',        name: 'Pocket 6K / 6K Pro / 6K G2',  group: 'blackmagic' },
+            { id: 'bmurmapro46kg2', name: 'URSA Mini Pro 4.6K G2',        group: 'blackmagic' },
+            { id: 'bmurmapro12k',   name: 'URSA Mini Pro 12K',            group: 'blackmagic' },
+            { id: 'bmpyxis6k',      name: 'Pyxis 6K (Full Frame)',        group: 'blackmagic' },
+            { id: 'bmpyxis12k',     name: 'Pyxis 12K (Full Frame)',       group: 'blackmagic' },
+            { id: 'bmurcine12klf',  name: 'URSA Cine 12K LF',            group: 'blackmagic' },
+            { id: 'bmursa17k',      name: 'URSA 17K 65',                  group: 'blackmagic' },
+            { id: 'bmursaimmersive',name: 'URSA Immersive',               group: 'blackmagic' },
+            { id: 'bmcinecammicro', name: 'Cinema Camera Micro 6K',       group: 'blackmagic' },
+        ];
+
+        // --- CARD COMPATIBILITY MAP ---
+        const cardCompatibility = {
+            // Sony Cinema Line
+            fx3:   ["sd_sdxc", "cfexpress_a", "custom"],
+            fx30:  ["sd_sdxc", "cfexpress_a", "custom"],
+            fx6:   ["sd_sdxc", "cfexpress_a", "custom"],
+            // Sony Alpha / ZV
+            a7cii:   ["sd_sdxc", "cfexpress_a", "custom"],
+            a6700:   ["sd_sdxc", "cfexpress_a", "custom"],
+            zve10ii: ["sd_sdxc", "custom"],
+            a6400:   ["sd_sdxc", "custom"],
+            a7iii:   ["sd_sdxc", "custom"],
+            a7riv:   ["sd_sdxc", "custom"],
+            // Blackmagic — CFast 2.0 shown as CFexpress B in this calculator (same slot type in older models)
+            bmpcc4k:         ["sd_sdxc", "cfexpress_b", "ssd", "custom"],   // CFast 2.0, SD UHS-II, USB-C SSD
+            bmpcc6k:         ["sd_sdxc", "cfexpress_b", "ssd", "custom"],   // CFast 2.0, SD UHS-II, USB-C SSD
+            bmurmapro46kg2:  ["sd_sdxc", "cfexpress_b", "ssd", "custom"],   // CFast 2.0, SD UHS-II, USB-C SSD
+            bmurmapro12k:    ["cfexpress_b", "ssd", "custom"],              // CFast 2.0 x2, USB-C SSD
+            bmpyxis6k:       ["cfexpress_b", "ssd", "custom"],              // CFexpress x2, USB-C SSD
+            bmpyxis12k:      ["cfexpress_b", "ssd", "custom"],              // CFexpress x2, USB-C SSD
+            bmurcine12klf:   ["cfexpress_b", "ssd", "custom"],              // CFexpress x2, USB-C SSD
+            bmursa17k:       ["cfexpress_b", "ssd", "custom"],              // CFexpress x2, USB-C SSD / NVMe
+            bmursaimmersive: ["ssd", "custom"],                             // NVMe internal/external
+            bmcinecammicro:  ["cfexpress_b", "ssd", "custom"],              // CFexpress x2, USB-C NVMe
+        };
+
+        // Human-readable labels for each card group
+        const cardGroupLabels = {
+            sd_sdxc:     "SD / SDXC",
+            cfexpress_a: "CFexpress Type A",
+            cfexpress_b: "CFexpress Type B",
+            ssd:         "Portable SSD",
+            custom:      "Custom"
+        };
+
+        // Storage options per group
+        const storageGroups = {
+            sd_sdxc: {
+                label: "SD / SDXC (V30 / V60 / V90)",
+                options: [
+                    { value: "64",   text: "64 GB" },
+                    { value: "128",  text: "128 GB" },
+                    { value: "256",  text: "256 GB" },
+                    { value: "512",  text: "512 GB" },
+                    { value: "1000", text: "1 TB" }
+                ]
+            },
+            cfexpress_a: {
+                label: "CFexpress Type A",
+                options: [
+                    { value: "80",   text: "80 GB" },
+                    { value: "160",  text: "160 GB" },
+                    { value: "320",  text: "320 GB" },
+                    { value: "640",  text: "640 GB" },
+                    { value: "960",  text: "960 GB" }
+                ]
+            },
+            cfexpress_b: {
+                label: "CFexpress Type B",
+                options: [
+                    { value: "128",  text: "128 GB" },
+                    { value: "256",  text: "256 GB" },
+                    { value: "512",  text: "512 GB" },
+                    { value: "1000", text: "1 TB" },
+                    { value: "2000", text: "2 TB" }
+                ]
+            },
+            ssd: {
+                label: "Portable SSD",
+                options: [
+                    { value: "500",  text: "500 GB" },
+                    { value: "1000", text: "1 TB" },
+                    { value: "2000", text: "2 TB" },
+                    { value: "4000", text: "4 TB" }
+                ]
+            },
+            custom: {
+                label: "Manual",
+                options: [
+                    { value: "custom", text: "Custom..." }
+                ]
+            }
+        };
+
+        // This data will be filtered at runtime
+        const allModes = [
+            // SONY NEW GEN (FX3, FX30, FX6, A7CII, A6700, ZVE10II)
+            { cams: ['fx3', 'fx30', 'a7cii', 'a6700', 'zve10ii'], res: '3840x2160', fps: ['23.98', '25'], codec: 'XAVC HS 4K', br: 100, label: '100 Mbps (4:2:2 10-bit)', min: 'V60' },
+            { cams: ['fx3', 'fx30', 'a7cii', 'a6700', 'zve10ii'], res: '3840x2160', fps: ['59.94', '50'], codec: 'XAVC HS 4K', br: 200, label: '200 Mbps (4:2:2 10-bit)', min: 'V60' },
+            { cams: ['fx3', 'fx30', 'a7cii', 'a6700', 'zve10ii'], res: '3840x2160', fps: ['119.88', '100'], codec: 'XAVC HS 4K', br: 280, label: '280 Mbps (4:2:2 10-bit)', min: 'CFEA' },
+            
+            { cams: ['fx3', 'fx30', 'a7cii', 'a6700', 'zve10ii'], res: '3840x2160', fps: ['23.98', '25', '29.97'], codec: 'XAVC S 4K', br: 140, label: '140 Mbps (4:2:2 10-bit)', min: 'V60' },
+            { cams: ['fx3', 'fx30', 'a7cii', 'a6700', 'zve10ii'], res: '3840x2160', fps: ['59.94', '50'], codec: 'XAVC S 4K', br: 200, label: '200 Mbps (4:2:2 10-bit)', min: 'V60' },
+            
+            { cams: ['fx3', 'fx30', 'a7cii', 'a6700', 'zve10ii'], res: '3840x2160', fps: ['23.98'], codec: 'XAVC S-I 4K', br: 240, label: '240 Mbps (4:2:2 10-bit)', min: 'V90' },
+            { cams: ['fx3', 'fx30', 'a7cii', 'a6700', 'zve10ii'], res: '3840x2160', fps: ['59.94'], codec: 'XAVC S-I 4K', br: 600, label: '600 Mbps (4:2:2 10-bit)', min: 'V90' },
+            { cams: ['fx3', 'fx30'], res: '3840x2160', fps: ['119.88'], codec: 'XAVC S-I 4K', br: 1200, label: '1200 Mbps (4:2:2 10-bit)', min: 'CFEA ONLY' },
+            
+            // FX30 EXCLUSIVE
+            { cams: ['fx30'], res: '4096x2160 (DCI 4K)', fps: ['24', '25', '29.97', '59.94'], codec: 'XAVC S-I DCI 4K', br: 600, label: '600 Mbps (4:2:2 10-bit)', min: 'V90' },
+            
+            // FX6 MXF MODES
+            { cams: ['fx6'], res: '4096x2160 (DCI 4K)', fps: ['23.98', '24', '25', '50', '59.94'], codec: 'XAVC-I 4K', br: 600, label: '340 - 600 Mbps (MXF) 10-bit', min: 'CFEA' },
+            { cams: ['fx6'], res: '3840x2160', fps: ['23.98', '50', '59.94'], codec: 'XAVC-L 4K', br: 140, label: '100 - 140 Mbps (MXF) 10-bit', min: 'V60' },
+
+            // OLD SONY 8-BIT
+            { cams: ['a6400', 'a7iii', 'a7riv'], res: '3840x2160', fps: ['23.98', '25', '29.97'], codec: 'XAVC S 4K', br: 100, label: '100 Mbps (4:2:0 8-bit)', min: 'V30 / U3' },
+            { cams: ['a6400', 'a7iii', 'a7riv'], res: '1920x1080', fps: ['23.98', '59.94', '119.88'], codec: 'XAVC S HD', br: 50, label: '50 Mbps (8-bit)', min: 'V30 / U3' },
+
+        ];
+
+        // --- Add 1080p for Sony mirrorless (auto-generated to avoid bloat) ---
+        ['fx3', 'fx30', 'fx6', 'a7cii', 'a6700', 'zve10ii'].forEach(c => {
+            allModes.push({ cams: [c], res: '1920x1080', fps: ['23.98', '59.94'], codec: 'XAVC S HD', br: 50, label: '50 Mbps (4:2:2 10-bit)', min: 'V30' });
+            allModes.push({ cams: [c], res: '1920x1080', fps: ['23.98', '59.94'], codec: 'XAVC S-I HD', br: 185, label: '222 Mbps (All-Intra)', min: 'V90' });
+        });
+
+        // ==================================================================
+        // BLACKMAGIC DATA — Complete from Official Tech Specs
+        // Bitrates are at 24fps (reference). Scale linearly for other fps.
+        // Sources: Blackmagic Design Tech Specs (2024)
+        // ==================================================================
+        //
+        // Data structure:
+        //   ids []         — camera IDs that share this dataset
+        //   resolutions [] — each entry: { res, px, maxFps, proRes? }
+        //   refPx          — pixel count of reference resolution for bitrate scaling
+        //   brawRates {}   — codec → MB/s at 24fps at refPx
+        //   proResRates {} — codec → MB/s at 24fps at refPx (optional)
+        //   minSd          — minimum card label for SD-capable BRAW modes
+        //   minHighBr      — minimum card label for high-bitrate BRAW (>800 Mbps)
+        //   minProRes      — minimum card label for ProRes
+        //   estimated      — true = interpolated, badge shown
+        //
+        const bmData = [
+
+            // ── POCKET 4K ─────────────────────────────────────────────
+            // Sensor: 4/3" MFT · Media: CFast 2.0, SD UHS-II, USB-C SSD
+            {
+                ids: ['bmpcc4k'],
+                refPx: 4096 * 2160,
+                resolutions: [
+                    { res: '4096x2160 (4K DCI)',          px: 4096*2160,  maxFps: 60,  proRes: true },
+                    { res: '4096x1720 (4K 2.4:1)',        px: 4096*1720,  maxFps: 75 },
+                    { res: '3840x2160 (Ultra HD)',        px: 3840*2160,  maxFps: 60,  proRes: true },
+                    { res: '2880x2160 (2.8K Anamorphic)', px: 2880*2160,  maxFps: 80 },
+                    { res: '2688x1512 (2.6K)',            px: 2688*1512,  maxFps: 120 },
+                    { res: '1920x1080 (HD)',              px: 1920*1080,  maxFps: 120, proRes: true },
+                ],
+                brawRates:   { '3:1': 113, '5:1': 67,  '8:1': 42,  '12:1': 28,
+                               'Q0':  135, 'Q1':  113, 'Q3':  67,  'Q5':   35 },
+                proResRates: { 'ProRes 422 HQ': 110, 'ProRes 422': 73, 'ProRes 422 LT': 49, 'ProRes Proxy': 18 },
+                minSd: 'SD UHS-II / CFast', minHighBr: 'CFast 2.0 / SSD', minProRes: 'CFast 2.0 / SSD',
+                estimated: false,
+            },
+
+            // ── POCKET 6K / 6K Pro / 6K G2 ───────────────────────────
+            // Sensor: Super 35 · Media: CFast 2.0, SD UHS-II, USB-C SSD
+            {
+                ids: ['bmpcc6k'],
+                refPx: 6144 * 3456,
+                resolutions: [
+                    { res: '6144x3456 (6K 16:9)',              px: 6144*3456, maxFps: 50 },
+                    { res: '6144x2560 (6K 2.4:1)',             px: 6144*2560, maxFps: 60 },
+                    { res: '5744x3024 (5.7K 17:9)',           px: 5744*3024, maxFps: 60 },
+                    { res: '4096x2160 (4K DCI)',               px: 4096*2160, maxFps: 60, proRes: true },
+                    { res: '3840x2160 (Ultra HD)',             px: 3840*2160, maxFps: 60, proRes: true },
+                    { res: '3728x3104 (3.7K 6:5 Anamorphic)', px: 3728*3104, maxFps: 60 },
+                    { res: '2880x1512 (2.8K 17:9)',           px: 2880*1512, maxFps: 120 },
+                    { res: '1920x1080 (HD)',                   px: 1920*1080, maxFps: 120, proRes: true },
+                ],
+                brawRates:   { '3:1': 323, '5:1': 194, '8:1': 121, '12:1': 81,
+                               'Q0':  388, 'Q1':  323, 'Q3':  194, 'Q5':  101 },
+                proResRates: { 'ProRes 422 HQ': 110, 'ProRes 422': 73, 'ProRes 422 LT': 49, 'ProRes Proxy': 18 },
+                minSd: 'SD UHS-II / CFast', minHighBr: 'CFast 2.0 / SSD', minProRes: 'CFast 2.0 / SSD',
+                estimated: false,
+            },
+
+            // ── URSA MINI PRO 4.6K G2 ────────────────────────────────
+            // Sensor: Super 35 · Media: CFast 2.0, SD UHS-II, USB-C SSD
+            {
+                ids: ['bmurmapro46kg2'],
+                refPx: 4608 * 2592,
+                resolutions: [
+                    { res: '4608x2592 (4.6K 16:9)',       px: 4608*2592, maxFps: 120 },
+                    { res: '4608x1920 (4.6K 2.4:1)',      px: 4608*1920, maxFps: 120 },
+                    { res: '4096x2304 (4K 16:9)',         px: 4096*2304, maxFps: 120 },
+                    { res: '4096x2160 (4K DCI)',          px: 4096*2160, maxFps: 120, proRes: true },
+                    { res: '3840x2160 (Ultra HD)',        px: 3840*2160, maxFps: 120, proRes: true },
+                    { res: '3072x2560 (3K Anamorphic)',  px: 3072*2560, maxFps: 120 },
+                    { res: '2048x1152 (2K 16:9)',         px: 2048*1152, maxFps: 300 },
+                    { res: '2048x1080 (2K DCI)',          px: 2048*1080, maxFps: 300 },
+                    { res: '1920x1080 (HD)',              px: 1920*1080, maxFps: 300, proRes: true },
+                ],
+                // Bitrates interpolated from BMPCC 4K data, scaled by pixel count
+                brawRates:   { '3:1': 140, '5:1': 84,  '8:1': 53,  '12:1': 35,
+                               'Q0':  168, 'Q1':  140, 'Q3':  84,  'Q5':   44 },
+                proResRates: { 'ProRes 422 HQ': 135, 'ProRes 422': 90, 'ProRes 422 LT': 60, 'ProRes Proxy': 22 },
+                minSd: 'SD UHS-II / CFast', minHighBr: 'CFast 2.0 / SSD', minProRes: 'CFast 2.0 / SSD',
+                estimated: true,
+            },
+
+            // ── URSA MINI PRO 12K ────────────────────────────────────
+            // Sensor: Super 35 80MP · Media: CFast 2.0 x2, SD UHS-II x2, USB-C SSD
+            {
+                ids: ['bmurmapro12k'],
+                refPx: 12288 * 6480,
+                resolutions: [
+                    { res: '12288x6480 (12K DCI)',        px: 12288*6480, maxFps: 60 },
+                    { res: '11520x6480 (12K 16:9)',       px: 11520*6480, maxFps: 60 },
+                    { res: '12288x5112 (12K 2.4:1)',      px: 12288*5112, maxFps: 75 },
+                    { res: '7680x6408 (12K Anamorphic)',  px: 7680*6408,  maxFps: 60 },
+                    { res: '8192x4320 (8K DCI)',          px: 8192*4320,  maxFps: 120 },
+                    { res: '7680x4320 (8K 16:9)',         px: 7680*4320,  maxFps: 120 },
+                    { res: '8192x3408 (8K 2.4:1)',        px: 8192*3408,  maxFps: 160 },
+                    { res: '5120x4272 (8K Anamorphic)',   px: 5120*4272,  maxFps: 120 },
+                    { res: '6144x3240 (6K Super 16)',     px: 6144*3240,  maxFps: 120 },
+                    { res: '4096x2160 (4K DCI)',          px: 4096*2160,  maxFps: 240 },
+                    { res: '1920x1080 (HD)',              px: 1920*1080,  maxFps: 240 },
+                ],
+                // No 3:1 for URSA 12K — starts at 5:1 per official specs
+                brawRates: { '5:1': 578, '8:1': 361, '12:1': 241, '18:1': 160,
+                             'Q0':  694, 'Q1':  578, 'Q3':  361, 'Q5':  200 },
+                minSd: 'SSD / CFast (dual)', minHighBr: 'SSD (NVMe recommended)', minProRes: 'CFast 2.0 / SSD',
+                estimated: false,
+            },
+
+            // ── PYXIS 6K (FULL FRAME) ────────────────────────────────
+            // Sensor: Full Frame 36×24mm · Media: CFexpress x2, USB-C SSD
+            {
+                ids: ['bmpyxis6k'],
+                refPx: 6048 * 4032,
+                resolutions: [
+                    { res: '6048x4032 (6K 3:2 Open Gate)', px: 6048*4032, maxFps: 120 },
+                    { res: '6048x2520 (6K 2.4:1)',         px: 6048*2520, maxFps: 120 },
+                    { res: '5744x2400 (6K 17:9)',          px: 5744*2400, maxFps: 120 },
+                    { res: '4096x2160 (4K DCI)',           px: 4096*2160, maxFps: 120 },
+                    { res: '3840x2160 (Ultra HD)',         px: 3840*2160, maxFps: 120 },
+                    { res: '3024x4032 (6K Vertical 4:3)', px: 3024*4032, maxFps: 60 },
+                    { res: '1920x1080 (HD)',               px: 1920*1080, maxFps: 120 },
+                ],
+                // Scaled from BMPCC 6K data proportionally
+                brawRates: { '3:1': 360, '5:1': 216, '8:1': 135, '12:1': 90,
+                             'Q0':  432, 'Q1':  360, 'Q3':  216, 'Q5':  112 },
+                minSd: 'CFexpress / SSD', minHighBr: 'CFexpress / SSD (fast)', minProRes: 'CFexpress / SSD',
+                estimated: true,
+            },
+
+            // ── PYXIS 12K (FULL FRAME) ───────────────────────────────
+            // Sensor: Full Frame 36×24mm RGBW · Media: CFexpress x2, USB-C SSD
+            {
+                ids: ['bmpyxis12k'],
+                refPx: 12288 * 8040,
+                resolutions: [
+                    { res: '12288x8040 (12K 3:2 Open Gate)', px: 12288*8040, maxFps: 40 },
+                    { res: '12288x5112 (12K 2.4:1)',         px: 12288*5112, maxFps: 60 },
+                    { res: '9648x8040 (9.6K Anamorphic)',    px: 9648*8040,  maxFps: 40 },
+                    { res: '8192x4320 (8K DCI)',             px: 8192*4320,  maxFps: 60 },
+                    { res: '8192x3408 (8K 2.4:1)',           px: 8192*3408,  maxFps: 112 },
+                    { res: '4096x2160 (4K DCI)',             px: 4096*2160,  maxFps: 112 },
+                    { res: '1920x1080 (HD)',                 px: 1920*1080,  maxFps: 120 },
+                ],
+                // No 3:1 — starts at 5:1 per official specs
+                brawRates: { '5:1': 920, '8:1': 575, '12:1': 384, '18:1': 253,
+                             'Q0': 1104, 'Q1':  920, 'Q3':  575, 'Q5':  320 },
+                minSd: 'CFexpress / SSD', minHighBr: 'NVMe SSD (high-speed)', minProRes: 'CFexpress / SSD',
+                estimated: true,
+            },
+
+            // ── URSA CINE 12K LF ─────────────────────────────────────
+            // Sensor: Large Format 36×24mm RGBW · Media: CFexpress x2, USB-C SSD
+            {
+                ids: ['bmurcine12klf'],
+                refPx: 12288 * 8040,
+                resolutions: [
+                    { res: '12288x8040 (12K 3:2 Open Gate)', px: 12288*8040, maxFps: 60 },
+                    { res: '12288x5112 (12K 2.4:1)',         px: 12288*5112, maxFps: 75 },
+                    { res: '9648x8040 (9.6K Anamorphic)',    px: 9648*8040,  maxFps: 60 },
+                    { res: '8192x4320 (8K DCI)',             px: 8192*4320,  maxFps: 120 },
+                    { res: '8192x3408 (8K 2.4:1)',           px: 8192*3408,  maxFps: 160 },
+                    { res: '4096x2160 (4K DCI)',             px: 4096*2160,  maxFps: 160 },
+                    { res: '1920x1080 (HD)',                 px: 1920*1080,  maxFps: 240 },
+                ],
+                // No 3:1 — starts at 5:1
+                brawRates: { '5:1': 960, '8:1': 600, '12:1': 400, '18:1': 264,
+                             'Q0': 1152, 'Q1':  960, 'Q3':  600, 'Q5':  332 },
+                minSd: 'CFexpress / SSD', minHighBr: 'NVMe SSD (high-speed)', minProRes: 'CFexpress / SSD',
+                estimated: true,
+            },
+
+            // ── URSA 17K 65 ──────────────────────────────────────────
+            // Sensor: 65mm 51×24mm RGBW · Media: CFexpress x2, USB-C/NVMe SSD
+            {
+                ids: ['bmursa17k'],
+                refPx: 17520 * 8040,
+                resolutions: [
+                    { res: '17520x8040 (17K Open Gate)',   px: 17520*8040, maxFps: 30 },
+                    { res: '16384x6804 (16K 2.4:1)',       px: 16384*6804, maxFps: 40 },
+                    { res: '12288x5112 (12K 2.4:1)',       px: 12288*5112, maxFps: 60 },
+                    { res: '8192x3408 (8K 2.4:1)',         px: 8192*3408,  maxFps: 120 },
+                    { res: '4096x2160 (4K DCI)',           px: 4096*2160,  maxFps: 120 },
+                    { res: '1920x1080 (HD)',               px: 1920*1080,  maxFps: 120 },
+                ],
+                // No 3:1 — starts at 8:1 per official specs
+                brawRates: { '8:1': 1150, '12:1': 767, '18:1': 506,
+                             'Q0':  1610, 'Q1': 1150, 'Q3':  767, 'Q5':  480 },
+                minSd: 'NVMe SSD (required)', minHighBr: 'NVMe SSD (required)', minProRes: 'NVMe SSD',
+                estimated: true,
+            },
+
+            // ── URSA IMMERSIVE ───────────────────────────────────────
+            // Sensor: Dual 8K×8K RGBW (Apple Vision Pro 3D) · Media: NVMe
+            {
+                ids: ['bmursaimmersive'],
+                refPx: 8192 * 8192,
+                resolutions: [
+                    { res: '8192x8192 (8K Square — per eye)', px: 8192*8192, maxFps: 90 },
+                ],
+                brawRates: { '8:1': 840, '12:1': 560, '18:1': 370,
+                             'Q0': 1120, 'Q1':  840, 'Q3':  560, 'Q5':  350 },
+                minSd: 'NVMe (required)', minHighBr: 'NVMe (required)', minProRes: 'NVMe',
+                estimated: true,
+                immersive: true,  // shows special info banner
+            },
+
+            // ── CINEMA CAMERA MICRO 6K ───────────────────────────────
+            // Sensor: Full Frame 6K · Media: CFexpress x2, USB-C NVMe
+            {
+                ids: ['bmcinecammicro'],
+                refPx: 6048 * 4032,
+                resolutions: [
+                    { res: '6048x4032 (6K 3:2 Open Gate)', px: 6048*4032, maxFps: 60 },
+                    { res: '6048x2520 (6K 2.4:1)',         px: 6048*2520, maxFps: 60 },
+                    { res: '4096x2160 (4K DCI)',           px: 4096*2160, maxFps: 60 },
+                    { res: '3840x2160 (Ultra HD)',         px: 3840*2160, maxFps: 60 },
+                    { res: '1920x1080 (HD)',               px: 1920*1080, maxFps: 60 },
+                ],
+                brawRates: { '3:1': 360, '5:1': 216, '8:1': 135, '12:1': 90,
+                             'Q0':  432, 'Q1':  360, 'Q3':  216, 'Q5':  112 },
+                minSd: 'CFexpress / SSD', minHighBr: 'NVMe SSD (fast)', minProRes: 'CFexpress / SSD',
+                estimated: true,
+            },
+        ]; // end bmData
+
+        // --- BM MODE GENERATOR ---
+        // Expands bmData into allModes-compatible entries at runtime.
+        // Bitrates stored in MB/s at reference resolution; scaled by pixel area.
+        function buildBMmodes() {
+            const allFps = [24, 25, 30, 40, 50, 60, 75, 80, 90, 100, 112, 120, 160, 240, 300];
+
+            function fpsUpTo(max) {
+                return allFps.filter(f => f <= max).map(String);
+            }
+
+            function minCard(br_mbps, cam) {
+                if (br_mbps >= 800) return cam.minHighBr;
+                if (br_mbps >= 300) return cam.minSd;
+                return cam.minSd;
+            }
+
+            bmData.forEach(cam => {
+                cam.resolutions.forEach(resObj => {
+                    const pixScale = resObj.px / cam.refPx;
+                    const fps = fpsUpTo(resObj.maxFps);
+                    const estTag = cam.estimated ? ' est.' : '';
+
+                    // BRAW modes
+                    Object.entries(cam.brawRates).forEach(([ratio, mbsRef]) => {
+                        const mbs = mbsRef * pixScale;
+                        const mbps = Math.max(8, Math.round(mbs * 8));
+                        const codecName = `BRAW ${ratio}`;
+                        allModes.push({
+                            cams: cam.ids,
+                            res:  resObj.res,
+                            fps,
+                            codec: codecName,
+                            br:   mbps,
+                            label: `~${mbps} Mbps (BRAW ${ratio}${estTag})`,
+                            min:  minCard(mbps, cam),
+                            estimated: cam.estimated,
+                        });
+                    });
+
+                    // ProRes modes (only where flagged on this resolution)
+                    if (resObj.proRes && cam.proResRates) {
+                        Object.entries(cam.proResRates).forEach(([codec, mbsRef]) => {
+                            const mbs = mbsRef * pixScale;
+                            const mbps = Math.max(8, Math.round(mbs * 8));
+                            allModes.push({
+                                cams: cam.ids,
+                                res:  resObj.res,
+                                fps:  fpsUpTo(Math.min(resObj.maxFps, 60)),
+                                codec,
+                                br:   mbps,
+                                label: `~${mbps} Mbps (${codec})`,
+                                min:  cam.minProRes,
+                                estimated: false,
+                            });
+                        });
+                    }
+                });
+            });
+        }
+
+        const i18n = {
+            en: {
+                subtitle: "Precise estimates for cinema and mirrorless workflows.",
+                selectCamera: "Select Camera",
+                selectResolution: "Select Resolution",
+                selectFps: "Select Frame Rate",
+                selectCodec: "Select Codec",
+                selectBitrate: "Select Bitrate / Quality",
+                selectStorage: "Select Storage Size",
+                recordingTime: "Recording Time",
+                dataRate: "Data Rate",
+                perMinute: "Per Minute",
+                perHour: "Per Hour",
+                storageUsed: "Storage",
+                minCard: "Min. Required",
+                customSize: "Custom...",
+                selectAll: "Select all parameters to see recording time.",
+                disclaimer: "Unofficial calculator tool based on manufacturer documentation. Built by Produtora Lumos.",
+                compatibleMedia: "Compatible media"
+            },
+            pt: {
+                subtitle: "Estimativas precisas para fluxos de cinema e mirrorless.",
+                selectCamera: "Selecione a Câmera",
+                selectResolution: "Selecione a Resolução",
+                selectFps: "Selecione o Frame Rate",
+                selectCodec: "Selecione o Codec",
+                selectBitrate: "Selecione o Bitrate / Qualidade",
+                selectStorage: "Selecione o Armazenamento",
+                recordingTime: "Tempo de Gravação",
+                dataRate: "Taxa de Dados",
+                perMinute: "Por Minuto",
+                perHour: "Por Hora",
+                storageUsed: "Armazenamento",
+                minCard: "Req. Mínimo",
+                customSize: "Personalizado...",
+                selectAll: "Selecione todos os parâmetros para ver o tempo.",
+                disclaimer: "Ferramenta não oficial baseada em documentação de fabricantes. Desenvolvido por Produtora Lumos.",
+                compatibleMedia: "Mídia compatível"
+            },
+            es: {
+                subtitle: "Estimaciones precisas para flujos de cine y mirrorless.",
+                selectCamera: "Selecciona la Cámara",
+                selectResolution: "Selecciona la Resolución",
+                selectFps: "Selecciona los FPS",
+                selectCodec: "Selecciona el Códec",
+                selectBitrate: "Selecciona el Bitrate",
+                selectStorage: "Selecciona el Almacenamiento",
+                recordingTime: "Tiempo de Grabación",
+                dataRate: "Tasa de Datos",
+                perMinute: "Por Minuto",
+                perHour: "Por Hora",
+                storageUsed: "Almacenamiento",
+                minCard: "Req. Mínimo",
+                customSize: "Personalizado...",
+                selectAll: "Selecciona todos los parámetros para ver el tiempo.",
+                disclaimer: "Calculadora no oficial basada en documentación de fabricantes. Desarrollado por Produtora Lumos.",
+                compatibleMedia: "Media compatible"
+            }
+        };
+
+        // --- STATE ---
+        let state = {
+            theme: 'dark',
+            lang: 'en',
+            camera: '',
+            res: '',
+            fps: '',
+            codec: '',
+            bitrate: null,
+            storageGB: 0,
+            isCustom: false
+        };
+
+        // --- DOM Elements ---
+        const dom = {
+            camera: document.getElementById('select-camera'),
+            res: document.getElementById('select-res'),
+            fps: document.getElementById('select-fps'),
+            codec: document.getElementById('select-codec'),
+            bitrate: document.getElementById('select-bitrate'),
+            storage: document.getElementById('select-storage'),
+            customBox: document.getElementById('custom-size-container'),
+            customInput: document.getElementById('custom-gb'),
+            results: document.getElementById('results'),
+            status: document.getElementById('status-msg'),
+            logo: document.getElementById('lumos-logo'),
+            themeBtn: document.getElementById('theme-toggle'),
+            themeIcon: document.getElementById('theme-icon'),
+            langBtns: document.querySelectorAll('.lang-btn'),
+            warnings: document.getElementById('warnings'),
+            mediaHint: document.getElementById('media-hint'),
+            valTime: document.getElementById('val-time'),
+            valDatarate: document.getElementById('val-datarate'),
+            valPerminute: document.getElementById('val-perminute'),
+            valPerhour: document.getElementById('val-perhour'),
+            valCard: document.getElementById('val-card'),
+            valBadge: document.getElementById('val-badge')
+        };
+
+        // --- LOGIC ---
+        function init() {
+            buildBMmodes();      // expand compact bmData → allModes entries
+            populateCameras();
+            addListeners();
+            updateUI();
+        }
+
+        function populateCameras() {
+            cameras.forEach(cam => {
+                const opt = document.createElement('option');
+                opt.value = cam.id;
+                opt.textContent = cam.name;
+                document.getElementById(cam.group).appendChild(opt);
+            });
+        }
+
+        function addListeners() {
+            dom.camera.addEventListener('change', () => {
+                state.camera = dom.camera.value;
+                resetFrom('res');
+                rebuildStorageDropdown();
+                updateUI();
+            });
+            dom.res.addEventListener('change', () => { state.res = dom.res.value; resetFrom('fps'); updateUI(); });
+            dom.fps.addEventListener('change', () => { state.fps = dom.fps.value; resetFrom('codec'); updateUI(); });
+            dom.codec.addEventListener('change', () => { state.codec = dom.codec.value; resetFrom('bitrate'); updateUI(); });
+            dom.bitrate.addEventListener('change', () => { 
+                const selected = allModes.find(m => 
+                    m.cams.includes(state.camera) && m.res === state.res && 
+                    m.fps.includes(state.fps) && m.codec === state.codec && 
+                    m.br == dom.bitrate.value
+                );
+                state.bitrate = selected;
+                updateUI(); 
+            });
+
+            dom.storage.addEventListener('change', () => {
+                if(dom.storage.value === 'custom') {
+                    state.isCustom = true;
+                    dom.customBox.classList.add('visible');
+                    state.storageGB = parseFloat(dom.customInput.value) || 0;
+                } else {
+                    state.isCustom = false;
+                    dom.customBox.classList.remove('visible');
+                    state.storageGB = parseFloat(dom.storage.value) || 0;
+                }
+                updateUI();
+            });
+
+            dom.customInput.addEventListener('input', () => {
+                state.storageGB = parseFloat(dom.customInput.value) || 0;
+                updateUI();
+            });
+
+            dom.themeBtn.addEventListener('click', toggleTheme);
+            dom.langBtns.forEach(btn => btn.addEventListener('click', () => setLang(btn.dataset.lang)));
+        }
+
+        // --- STORAGE DROPDOWN: CAMERA-AWARE ---
+        function rebuildStorageDropdown() {
+            const cam = state.camera;
+            const compatible = cardCompatibility[cam] || [];
+            
+            // Reset storage state
+            state.storageGB = 0;
+            state.isCustom = false;
+            dom.customBox.classList.remove('visible');
+
+            // Build new dropdown
+            dom.storage.innerHTML = '<option value="" disabled selected>—</option>';
+
+            compatible.forEach(groupKey => {
+                const group = storageGroups[groupKey];
+                if (!group) return;
+                const optgroup = document.createElement('optgroup');
+                optgroup.setAttribute('label', group.label);
+                optgroup.setAttribute('data-group', groupKey);
+                group.options.forEach(opt => {
+                    const option = document.createElement('option');
+                    option.value = opt.value;
+                    option.textContent = opt.text;
+                    optgroup.appendChild(option);
+                });
+                dom.storage.appendChild(optgroup);
+            });
+
+            // Build media hint
+            const mediaTypes = compatible
+                .filter(k => k !== 'custom')
+                .map(k => cardGroupLabels[k])
+                .filter(Boolean);
+            
+            if (mediaTypes.length > 0) {
+                const label = i18n[state.lang]?.compatibleMedia || 'Compatible media';
+                dom.mediaHint.textContent = `${label}: ${mediaTypes.join(' / ')}`;
+                dom.mediaHint.classList.add('visible');
+            } else {
+                dom.mediaHint.classList.remove('visible');
+            }
+        }
+
+        // Disable SD options when bitrate requires CFexpress
+        function enforceStorageRestrictions() {
+            if (!state.bitrate) return;
+
+            const minReq = state.bitrate.min;
+            const isCFEAOnly = minReq.includes('CFEA ONLY');
+            
+            // Find SD optgroup and disable/enable its options
+            const sdOptgroup = dom.storage.querySelector('[data-group="sd_sdxc"]');
+            if (sdOptgroup) {
+                const sdOptions = sdOptgroup.querySelectorAll('option');
+                sdOptions.forEach(opt => {
+                    opt.disabled = isCFEAOnly;
+                });
+                if (isCFEAOnly) {
+                    sdOptgroup.setAttribute('label', '⛔ SD / SDXC — Too slow for this mode');
+                } else {
+                    sdOptgroup.setAttribute('label', storageGroups.sd_sdxc.label);
+                }
+            }
+
+            // If current selection is in a now-disabled group, reset
+            if (isCFEAOnly && state.storageGB > 0 && !state.isCustom) {
+                const currentVal = dom.storage.value;
+                const selectedOpt = dom.storage.querySelector(`option[value="${currentVal}"]`);
+                if (selectedOpt && selectedOpt.disabled) {
+                    dom.storage.value = '';
+                    state.storageGB = 0;
+                }
+            }
+        }
+
+        function resetFrom(level) {
+            const sequence = ['res', 'fps', 'codec', 'bitrate'];
+            const startIndex = sequence.indexOf(level);
+            for(let i = startIndex; i < sequence.length; i++) {
+                state[sequence[i]] = (sequence[i] === 'bitrate' ? null : '');
+                dom[sequence[i]].innerHTML = '<option value="" disabled selected>—</option>';
+                dom[sequence[i]].disabled = true;
+            }
+        }
+
+        function updateUI() {
+            updateDropdowns();
+            enforceStorageRestrictions();
+            calculate();
+            renderTheme();
+            updateWarnings();
+        }
+
+        function updateDropdowns() {
+            if(!state.camera) return;
+
+            // RESOLUTIONS
+            if(dom.res.disabled) {
+                const filteredRes = [...new Set(allModes.filter(m => m.cams.includes(state.camera)).map(m => m.res))];
+                fillSelect(dom.res, filteredRes);
+                dom.res.disabled = false;
+            }
+
+            // FPS
+            if(state.res && dom.fps.disabled) {
+                const filteredFps = [...new Set(allModes.filter(m => m.cams.includes(state.camera) && m.res === state.res).flatMap(m => m.fps))];
+                fillSelect(dom.fps, filteredFps.sort((a,b) => parseFloat(a)-parseFloat(b)));
+                dom.fps.disabled = false;
+            }
+
+            // CODEC
+            if(state.fps && dom.codec.disabled) {
+                const filteredCodec = [...new Set(allModes.filter(m => m.cams.includes(state.camera) && m.res === state.res && m.fps.includes(state.fps)).map(m => m.codec))];
+                fillSelect(dom.codec, filteredCodec);
+                dom.codec.disabled = false;
+            }
+
+            // BITRATE
+            if(state.codec && dom.bitrate.disabled) {
+                const filteredBr = allModes.filter(m => m.cams.includes(state.camera) && m.res === state.res && m.fps.includes(state.fps) && m.codec === state.codec);
+                dom.bitrate.innerHTML = '<option value="" disabled selected>—</option>';
+                filteredBr.forEach(m => {
+                    const opt = document.createElement('option');
+                    opt.value = m.br;
+                    opt.textContent = m.label;
+                    dom.bitrate.appendChild(opt);
+                });
+                dom.bitrate.disabled = false;
+            }
+        }
+
+        function fillSelect(el, items) {
+            el.innerHTML = '<option value="" disabled selected>—</option>';
+            items.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item;
+                opt.textContent = item;
+                el.appendChild(opt);
+            });
+        }
+
+        function calculate() {
+            const ready = state.camera && state.res && state.fps && state.codec && state.bitrate && state.storageGB > 0;
+            
+            if(ready) {
+                const storageGB = state.storageGB;
+                const bitrateMbps = state.bitrate.br;
+                
+                const usableGB = storageGB * 0.93;
+                const usableBytes = usableGB * 1_000_000_000;
+                const bitrateBps = bitrateMbps * 1_000_000;
+                const seconds = (usableBytes * 8) / bitrateBps;
+                
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = Math.floor(seconds % 60);
+                
+                dom.valTime.textContent = `${h}h ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`;
+                dom.valDatarate.textContent = `${(bitrateMbps/8).toFixed(1)} MB/s`;
+                dom.valPerminute.textContent = `${Math.round((bitrateMbps/8)*60).toLocaleString()} MB`;
+                dom.valPerhour.textContent = `${((bitrateMbps/8)*3.6).toFixed(1)} GB`;
+                dom.valCard.textContent = storageGB >= 1000 ? `${(storageGB/1000).toFixed(storageGB % 1000 === 0 ? 0 : 1)} TB` : `${storageGB} GB`;
+                dom.valBadge.textContent = state.bitrate.min;
+                
+                dom.results.style.display = 'block';
+                dom.status.style.display = 'none';
+            } else {
+                dom.results.style.display = 'none';
+                dom.status.style.display = 'block';
+            }
+        }
+
+        function updateWarnings() {
+            dom.warnings.innerHTML = '';
+            if(!state.camera) return;
+
+            const isFX3 = state.camera === 'fx3';
+            const isFX30 = state.camera === 'fx30';
+            const isFX6 = state.camera === 'fx6';
+
+            // FX3/FX6 Crop
+            if((isFX3 || isFX6) && (state.fps === '119.88' || state.fps === '100')) {
+                addWarning('ℹ️ ~10% sensor crop at this frame rate.', 'info');
+            }
+            
+            // FX30 Crop
+            if((isFX30 || state.camera === 'a6700') && (state.fps === '119.88' || state.fps === '100')) {
+                addWarning('ℹ️ 1.6× additional sensor crop at this frame rate.', 'info');
+            }
+
+            // Intra Info
+            if(state.codec && state.codec.includes('S-I')) {
+                addWarning('💡 All-Intra: best for grading. Files 2–4× larger than Long GOP.', 'info');
+            }
+
+            // 8-bit Warning
+            if(['a6400', 'a7iii', 'a7riv'].includes(state.camera)) {
+                addWarning('⚠️ Older camera: 8-bit internal recording only. Limited grading latitude.', 'warning');
+            }
+
+            // CFE-A required (1200 Mbps mode)
+            if(state.bitrate && state.bitrate.min.includes('CFEA ONLY')) {
+                addWarning('⚠️ CFexpress Type A required at this bitrate. SD cards are not supported.', 'warning');
+            } else if(state.bitrate && state.bitrate.min.includes('CFEA')) {
+                addWarning('⚠️ CFexpress Type A strongly recommended for this bitrate.', 'warning');
+            }
+
+            // V90 recommendation for S-I modes
+            if(state.bitrate && state.codec && state.codec.includes('S-I') && !state.bitrate.min.includes('CFEA')) {
+                addWarning('💡 SD V90 minimum recommended for XAVC S-I recording.', 'info');
+            }
+
+            // BRAW estimated data badge
+            if(state.bitrate && state.bitrate.estimated) {
+                addWarning('ℹ️ Bitrate is estimated via pixel-count interpolation from official Blackmagic specs. Actual values may vary slightly.', 'info');
+            }
+
+            // URSA Immersive 3D notice
+            const immersiveCam = bmData.find(c => c.immersive && c.ids.includes(state.camera));
+            if(immersiveCam) {
+                addWarning('🎥 Stereoscopic immersive camera for Apple Vision Pro. Recording time shown is per eye. Total NVMe throughput is doubled for 3D capture. Refer to Blackmagic manual for current specs.', 'info');
+            }
+
+            // High fps bitrate scaling note for BM cameras
+            const isBM = cameras.find(c => c.id === state.camera && c.group === 'blackmagic');
+            if(isBM && state.fps && parseFloat(state.fps) > 24) {
+                addWarning(`💡 BRAW bitrate scales with frame rate. The result shown is based on 24fps reference data × (${state.fps}/24). Actual usage may differ from in-camera recording.`, 'info');
+            }
+        }
+
+        function addWarning(txt, type) {
+            const b = document.createElement('div');
+            b.className = `banner ${type}`;
+            b.textContent = txt;
+            b.style.display = 'flex';
+            dom.warnings.appendChild(b);
+        }
+
+        function toggleTheme() {
+            state.theme = state.theme === 'dark' ? 'light' : 'dark';
+            renderTheme();
+        }
+
+        function renderTheme() {
+            document.body.setAttribute('data-theme', state.theme);
+            dom.logo.innerHTML = SVGS[state.theme];
+            
+            if(state.theme === 'light') {
+                dom.themeIcon.innerHTML = '<path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>';
+            } else {
+                dom.themeIcon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+            }
+        }
+
+        function setLang(l) {
+            state.lang = l;
+            dom.langBtns.forEach(b => b.classList.toggle('active', b.dataset.lang === l));
+            
+            const dict = i18n[l];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const k = el.dataset.i18n;
+                if(dict[k]) el.textContent = dict[k];
+            });
+            
+            document.getElementById('footer-text').textContent = dict.disclaimer;
+
+            // Update media hint text if camera is selected
+            if (state.camera) {
+                rebuildStorageDropdown();
+            }
+        }
+
+        // --- START ---
+        init();
+        renderTheme(); // Initial logo draw
+    </script>
+</body>
+</html>
