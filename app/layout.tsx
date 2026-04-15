@@ -17,10 +17,13 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Lumos | Produtora Audiovisual em São Paulo",
+  title: "Produtora Lumos",
   description: "O time de vídeo que a sua marca precisava ter dentro de casa. Digital, filme e live para marcas que não abrem mão de qualidade.",
+  icons: {
+    icon: "/favicon.svg",
+  },
   openGraph: {
-    title: "Lumos | Produtora Audiovisual em São Paulo",
+    title: "Produtora Lumos",
     description: "O time de vídeo que a sua marca precisava ter dentro de casa.",
     type: "website",
     locale: "pt_BR",

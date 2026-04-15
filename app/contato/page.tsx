@@ -108,7 +108,7 @@ export default function ContatoPage() {
                       </div>
                       <div>
                          <span className="block text-xs font-bold tracking-widest text-lumos-gray-medium">WhatsApp</span>
-                         <span className="text-xl md:text-2xl font-light text-lumos-black">+55 11 99331-6297</span>
+                         <span className="text-xl md:text-2xl font-light text-lumos-black">+55 11 98667-6747</span>
                       </div>
                    </div>
                    <div className="flex items-center gap-6 group">

@@ -22,7 +22,7 @@ export default function Footer() {
             <Link href="https://linkedin.com/company/produtoralumos" className="hover:text-lumos-yellow transition-colors">
               <Linkedin size={24} />
             </Link>
-            <Link href="https://wa.me/5511993316297" className="hover:text-lumos-yellow transition-colors">
+            <Link href="https://wa.me/5511986676747" className="hover:text-lumos-yellow transition-colors">
               <MessageCircle size={24} />
             </Link>
             <Link href="mailto:comercial@produtoralumos.com.br" className="hover:text-lumos-yellow transition-colors">
@@ -48,7 +48,7 @@ export default function Footer() {
           <ul className="space-y-4 text-white/50 text-sm font-medium mb-8">
             <li>Avenida Jaceru, 384 — SP</li>
             <li>comercial@produtoralumos.com.br</li>
-            <li>+55 11 99331-6297</li>
+            <li>+55 11 98667-6747</li>
           </ul>
           
           {/* Small Footer Map */}
