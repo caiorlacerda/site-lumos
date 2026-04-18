@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     const { data, error } = await resend.emails.send({
       from: 'Lumos Site <contato@mail.produtoralumos.com.br>',
       to: ['comercial@produtoralumos.com.br'],
-      reply_to: email,
+      replyTo: email,
       subject: `[Site Lumos] Nova mensagem de ${nome} — ${tipo}`,
       html: `
         <h2>Nova mensagem do site</h2>
