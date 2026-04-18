@@ -4,12 +4,39 @@ import { useState } from "react";
 import { Mail, MessageCircle, Instagram, Send } from "lucide-react";
 
 export default function ContatoPage() {
-  const [status, setStatus] = useState<"idle" | "sending" | "success">("idle");
+  const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const [nome, setNome] = useState("");
+  const [empresa, setEmpresa] = useState("");
+  const [email, setEmail] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
+  const [tipo, setTipo] = useState("Digital");
+  const [mensagem, setMensagem] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("sending");
-    setTimeout(() => setStatus("success"), 1500);
+    
+    try {
+      const response = await fetch("/api/contato", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nome, empresa, email, whatsapp, tipo, mensagem }),
+      });
+      
+      if (response.ok) {
+        setStatus("success");
+        setNome("");
+        setEmpresa("");
+        setEmail("");
+        setWhatsapp("");
+        setTipo("Digital");
+        setMensagem("");
+      } else {
+        setStatus("error");
+      }
+    } catch (error) {
+      setStatus("error");
+    }
   };
 
   return (
@@ -31,28 +58,28 @@ export default function ContatoPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="relative border-b-2 border-lumos-gray-medium/20 focus-within:border-lumos-yellow transition-colors pb-2">
                   <label htmlFor="nome" className="block text-xs font-bold tracking-widest text-lumos-gray-medium mb-2">Nome</label>
-                  <input type="text" id="nome" required className="w-full bg-transparent border-none outline-none text-xl font-light py-2 text-lumos-black placeholder:text-lumos-gray-medium/50" placeholder="Seu nome" />
+                  <input type="text" id="nome" required value={nome} onChange={(e) => setNome(e.target.value)} className="w-full bg-transparent border-none outline-none text-xl font-light py-2 text-lumos-black placeholder:text-lumos-gray-medium/50" placeholder="Seu nome" />
                 </div>
                 <div className="relative border-b-2 border-lumos-gray-medium/20 focus-within:border-lumos-yellow transition-colors pb-2">
                   <label htmlFor="empresa" className="block text-xs font-bold tracking-widest text-lumos-gray-medium mb-2">Empresa</label>
-                  <input type="text" id="empresa" required className="w-full bg-transparent border-none outline-none text-xl font-light py-2 text-lumos-black placeholder:text-lumos-gray-medium/50" placeholder="Nome da sua marca" />
+                  <input type="text" id="empresa" required value={empresa} onChange={(e) => setEmpresa(e.target.value)} className="w-full bg-transparent border-none outline-none text-xl font-light py-2 text-lumos-black placeholder:text-lumos-gray-medium/50" placeholder="Nome da sua marca" />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="relative border-b-2 border-lumos-gray-medium/20 focus-within:border-lumos-yellow transition-colors pb-2">
                   <label htmlFor="email" className="block text-xs font-bold tracking-widest text-lumos-gray-medium mb-2">E-mail</label>
-                  <input type="email" id="email" required className="w-full bg-transparent border-none outline-none text-xl font-light py-2 text-lumos-black placeholder:text-lumos-gray-medium/50" placeholder="seu@email.com" />
+                  <input type="email" id="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="w-full bg-transparent border-none outline-none text-xl font-light py-2 text-lumos-black placeholder:text-lumos-gray-medium/50" placeholder="seu@email.com" />
                 </div>
                 <div className="relative border-b-2 border-lumos-gray-medium/20 focus-within:border-lumos-yellow transition-colors pb-2">
                   <label htmlFor="whatsapp" className="block text-xs font-bold tracking-widest text-lumos-gray-medium mb-2">WhatsApp</label>
-                  <input type="text" id="whatsapp" required className="w-full bg-transparent border-none outline-none text-xl font-light py-2 text-lumos-black placeholder:text-lumos-gray-medium/50" placeholder="(00) 00000-0000" />
+                  <input type="text" id="whatsapp" required value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} className="w-full bg-transparent border-none outline-none text-xl font-light py-2 text-lumos-black placeholder:text-lumos-gray-medium/50" placeholder="(00) 00000-0000" />
                 </div>
               </div>
 
               <div className="relative border-b-2 border-lumos-gray-medium/20 focus-within:border-lumos-yellow transition-colors pb-2">
                 <label className="block text-xs font-bold tracking-widest text-lumos-gray-medium mb-2">Tipo de projeto</label>
-                <select className="w-full bg-transparent border-none outline-none text-xl font-light py-2 appearance-none text-lumos-black">
+                <select value={tipo} onChange={(e) => setTipo(e.target.value)} className="w-full bg-transparent border-none outline-none text-xl font-light py-2 appearance-none text-lumos-black">
                    <option>Digital</option>
                    <option>Filmes</option>
                    <option>Live</option>
@@ -62,7 +89,7 @@ export default function ContatoPage() {
 
               <div className="relative border-b-2 border-lumos-gray-medium/20 focus-within:border-lumos-yellow transition-colors pb-2">
                 <label htmlFor="mensagem" className="block text-xs font-bold tracking-widest text-lumos-gray-medium mb-2">Conte um pouco sobre o projeto</label>
-                <textarea id="mensagem" required rows={3} className="w-full bg-transparent border-none outline-none text-xl font-light py-2 resize-none text-lumos-black placeholder:text-lumos-gray-medium/50" placeholder="O que você precisa?" />
+                <textarea id="mensagem" required rows={3} value={mensagem} onChange={(e) => setMensagem(e.target.value)} className="w-full bg-transparent border-none outline-none text-xl font-light py-2 resize-none text-lumos-black placeholder:text-lumos-gray-medium/50" placeholder="O que você precisa?" />
               </div>
 
               <button
@@ -71,6 +98,8 @@ export default function ContatoPage() {
                 className={`w-full group py-6 text-xl font-bold flex items-center justify-center transition-all rounded-2xl ${
                   status === "success" 
 ? "bg-green-600 text-white" 
+: status === "error"
+? "bg-red-600 text-white"
 : "bg-lumos-black text-white hover:bg-lumos-yellow hover:text-lumos-black"
                 }`}
               >
@@ -82,7 +111,12 @@ export default function ContatoPage() {
                 )}
                 {status === "sending" && <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white" />}
                 {status === "success" && "Mensagem enviada!"}
+                {status === "error" && "Erro ao enviar"}
               </button>
+              
+              {status === "error" && (
+                <p className="text-red-600 text-sm py-4">Ocorreu um erro ao enviar sua mensagem. Tente novamente.</p>
+              )}
               
               <p className="text-lumos-gray-medium text-sm py-4">A gente responde em até 1 dia útil. Prometido.</p>
             </form>
