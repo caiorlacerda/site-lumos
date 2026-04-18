@@ -41,7 +41,7 @@ export default function RootLayout({
       <body className="bg-lumos-offwhite text-lumos-black selection:bg-lumos-yellow selection:text-lumos-black">
 
         <Navbar />
-        <main className="min-h-screen px-4 md:px-8 lg:px-12">
+        <main className="min-h-screen">
           {children}
         </main>
         <Footer />
