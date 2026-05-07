@@ -562,6 +562,7 @@
                     <label class="label-pill" data-i18n="selectCamera">Select Camera</label>
                     <select id="select-camera">
                         <option value="" disabled selected>—</option>
+                        <optgroup label="🎬 Canon Cinema EOS" id="canon-cinema"></optgroup>
                         <optgroup label="🎬 Sony Cinema Line" id="sony-cinema"></optgroup>
                         <optgroup label="📷 Sony Alpha / ZV" id="sony-alpha"></optgroup>
                         <optgroup label="🎥 Blackmagic Design" id="blackmagic"></optgroup>
@@ -673,11 +674,14 @@
         };
 
         const cameras = [
+            // Canon Cinema
+            { id: 'canon-c50', name: 'Canon EOS C50', group: 'canon-cinema' },
             // Sony Cinema
             { id: 'fx3', name: 'Sony FX3', group: 'sony-cinema' },
             { id: 'fx30', name: 'Sony FX30', group: 'sony-cinema' },
             { id: 'fx6', name: 'Sony FX6', group: 'sony-cinema' },
             // Sony Alpha
+            { id: 'a7siii', name: 'Sony A7S III', group: 'sony-alpha' },
             { id: 'a7cii', name: 'Sony A7C II', group: 'sony-alpha' },
             { id: 'a6700', name: 'Sony a6700', group: 'sony-alpha' },
             { id: 'zve10ii', name: 'Sony ZV-E10 II', group: 'sony-alpha' },
@@ -699,11 +703,14 @@
 
         // --- CARD COMPATIBILITY MAP ---
         const cardCompatibility = {
+            // Canon Cinema
+            'canon-c50': ["sd_sdxc", "cfexpress_b", "custom"],
             // Sony Cinema Line
             fx3:   ["sd_sdxc", "cfexpress_a", "custom"],
             fx30:  ["sd_sdxc", "cfexpress_a", "custom"],
             fx6:   ["sd_sdxc", "cfexpress_a", "custom"],
             // Sony Alpha / ZV
+            a7siii:  ["sd_sdxc", "cfexpress_a", "custom"],
             a7cii:   ["sd_sdxc", "cfexpress_a", "custom"],
             a6700:   ["sd_sdxc", "cfexpress_a", "custom"],
             zve10ii: ["sd_sdxc", "custom"],
@@ -783,17 +790,16 @@
 
         // This data will be filtered at runtime
         const allModes = [
-            // SONY NEW GEN (FX3, FX30, FX6, A7CII, A6700, ZVE10II)
-            { cams: ['fx3', 'fx30', 'a7cii', 'a6700', 'zve10ii'], res: '3840x2160', fps: ['23.98', '25'], codec: 'XAVC HS 4K', br: 100, label: '100 Mbps (4:2:2 10-bit)', min: 'V60' },
-            { cams: ['fx3', 'fx30', 'a7cii', 'a6700', 'zve10ii'], res: '3840x2160', fps: ['59.94', '50'], codec: 'XAVC HS 4K', br: 200, label: '200 Mbps (4:2:2 10-bit)', min: 'V60' },
-            { cams: ['fx3', 'fx30', 'a7cii', 'a6700', 'zve10ii'], res: '3840x2160', fps: ['119.88', '100'], codec: 'XAVC HS 4K', br: 280, label: '280 Mbps (4:2:2 10-bit)', min: 'CFEA' },
+            { cams: ['fx3', 'fx30', 'a7siii', 'a7cii', 'a6700', 'zve10ii'], res: '3840x2160', fps: ['23.98', '25'], codec: 'XAVC HS 4K', br: 100, label: '100 Mbps (4:2:2 10-bit)', min: 'V60' },
+            { cams: ['fx3', 'fx30', 'a7siii', 'a7cii', 'a6700', 'zve10ii'], res: '3840x2160', fps: ['59.94', '50'], codec: 'XAVC HS 4K', br: 200, label: '200 Mbps (4:2:2 10-bit)', min: 'V60' },
+            { cams: ['fx3', 'fx30', 'a7siii', 'a7cii', 'a6700', 'zve10ii'], res: '3840x2160', fps: ['119.88', '100'], codec: 'XAVC HS 4K', br: 280, label: '280 Mbps (4:2:2 10-bit)', min: 'CFEA' },
             
-            { cams: ['fx3', 'fx30', 'a7cii', 'a6700', 'zve10ii'], res: '3840x2160', fps: ['23.98', '25', '29.97'], codec: 'XAVC S 4K', br: 140, label: '140 Mbps (4:2:2 10-bit)', min: 'V60' },
-            { cams: ['fx3', 'fx30', 'a7cii', 'a6700', 'zve10ii'], res: '3840x2160', fps: ['59.94', '50'], codec: 'XAVC S 4K', br: 200, label: '200 Mbps (4:2:2 10-bit)', min: 'V60' },
+            { cams: ['fx3', 'fx30', 'a7siii', 'a7cii', 'a6700', 'zve10ii'], res: '3840x2160', fps: ['23.98', '25', '29.97'], codec: 'XAVC S 4K', br: 140, label: '140 Mbps (4:2:2 10-bit)', min: 'V60' },
+            { cams: ['fx3', 'fx30', 'a7siii', 'a7cii', 'a6700', 'zve10ii'], res: '3840x2160', fps: ['59.94', '50'], codec: 'XAVC S 4K', br: 200, label: '200 Mbps (4:2:2 10-bit)', min: 'V60' },
             
-            { cams: ['fx3', 'fx30', 'a7cii', 'a6700', 'zve10ii'], res: '3840x2160', fps: ['23.98'], codec: 'XAVC S-I 4K', br: 240, label: '240 Mbps (4:2:2 10-bit)', min: 'V90' },
-            { cams: ['fx3', 'fx30', 'a7cii', 'a6700', 'zve10ii'], res: '3840x2160', fps: ['59.94'], codec: 'XAVC S-I 4K', br: 600, label: '600 Mbps (4:2:2 10-bit)', min: 'V90' },
-            { cams: ['fx3', 'fx30'], res: '3840x2160', fps: ['119.88'], codec: 'XAVC S-I 4K', br: 1200, label: '1200 Mbps (4:2:2 10-bit)', min: 'CFEA ONLY' },
+            { cams: ['fx3', 'fx30', 'a7siii', 'a7cii', 'a6700', 'zve10ii'], res: '3840x2160', fps: ['23.98'], codec: 'XAVC S-I 4K', br: 240, label: '240 Mbps (4:2:2 10-bit)', min: 'V90' },
+            { cams: ['fx3', 'fx30', 'a7siii', 'a7cii', 'a6700', 'zve10ii'], res: '3840x2160', fps: ['59.94'], codec: 'XAVC S-I 4K', br: 600, label: '600 Mbps (4:2:2 10-bit)', min: 'V90' },
+            { cams: ['fx3', 'fx30', 'a7siii'], res: '3840x2160', fps: ['119.88'], codec: 'XAVC S-I 4K', br: 1200, label: '1200 Mbps (4:2:2 10-bit)', min: 'CFEA ONLY' },
             
             // FX30 EXCLUSIVE
             { cams: ['fx30'], res: '4096x2160 (DCI 4K)', fps: ['24', '25', '29.97', '59.94'], codec: 'XAVC S-I DCI 4K', br: 600, label: '600 Mbps (4:2:2 10-bit)', min: 'V90' },
@@ -806,10 +812,58 @@
             { cams: ['a6400', 'a7iii', 'a7riv'], res: '3840x2160', fps: ['23.98', '25', '29.97'], codec: 'XAVC S 4K', br: 100, label: '100 Mbps (4:2:0 8-bit)', min: 'V30 / U3' },
             { cams: ['a6400', 'a7iii', 'a7riv'], res: '1920x1080', fps: ['23.98', '59.94', '119.88'], codec: 'XAVC S HD', br: 50, label: '50 Mbps (8-bit)', min: 'V30 / U3' },
 
+            // CANON EOS C50 (7K Full Frame)
+            // Canon EOS C50 specs source: https://www.usa.canon.com/shop/p/eos-c50 (accessed 2026-05-06)
+            
+            // Cinema RAW Light
+            { cams: ['canon-c50'], res: '7K 17:9 (6960x3672)', fps: ['29.97'], codec: 'Cinema RAW Light HQ', br: 2900, label: '2900 Mbps (12-bit RAW HQ)', min: 'CFEB ONLY' },
+            { cams: ['canon-c50'], res: '7K 17:9 (6960x3672)', fps: ['25'], codec: 'Cinema RAW Light HQ', br: 2420, label: '2420 Mbps (12-bit RAW HQ)', min: 'CFEB ONLY' },
+            { cams: ['canon-c50'], res: '7K 17:9 (6960x3672)', fps: ['24', '23.98'], codec: 'Cinema RAW Light HQ', br: 2320, label: '2320 Mbps (12-bit RAW HQ)', min: 'CFEB ONLY' },
+
+            { cams: ['canon-c50'], res: '7K 3:2 (Open Gate)', fps: ['29.97'], codec: 'Cinema RAW Light ST', br: 1810, label: '1810 Mbps (12-bit RAW ST)', min: 'CFEB ONLY' },
+            { cams: ['canon-c50'], res: '7K 3:2 (Open Gate)', fps: ['25'], codec: 'Cinema RAW Light ST', br: 1510, label: '1510 Mbps (12-bit RAW ST)', min: 'CFEB ONLY' },
+            { cams: ['canon-c50'], res: '7K 3:2 (Open Gate)', fps: ['24', '23.98'], codec: 'Cinema RAW Light ST', br: 1450, label: '1450 Mbps (12-bit RAW ST)', min: 'CFEB ONLY' },
+
+            { cams: ['canon-c50'], res: '7K 17:9 (6960x3672)', fps: ['59.94'], codec: 'Cinema RAW Light ST', br: 2860, label: '2860 Mbps (12-bit RAW ST)', min: 'CFEB ONLY' },
+            { cams: ['canon-c50'], res: '7K 17:9 (6960x3672)', fps: ['50'], codec: 'Cinema RAW Light ST', br: 2380, label: '2380 Mbps (12-bit RAW ST)', min: 'CFEB ONLY' },
+            { cams: ['canon-c50'], res: '7K 17:9 (6960x3672)', fps: ['29.97'], codec: 'Cinema RAW Light ST', br: 1430, label: '1430 Mbps (12-bit RAW ST)', min: 'CFEB ONLY' },
+            { cams: ['canon-c50'], res: '7K 17:9 (6960x3672)', fps: ['25'], codec: 'Cinema RAW Light ST', br: 1190, label: '1190 Mbps (12-bit RAW ST)', min: 'CFEB ONLY' },
+            { cams: ['canon-c50'], res: '7K 17:9 (6960x3672)', fps: ['24', '23.98'], codec: 'Cinema RAW Light ST', br: 1140, label: '1140 Mbps (12-bit RAW ST)', min: 'CFEB ONLY' },
+
+            { cams: ['canon-c50'], res: '7K 3:2 (Open Gate)', fps: ['29.97'], codec: 'Cinema RAW Light LT', br: 902, label: '902 Mbps (12-bit RAW LT)', min: 'CFEB ONLY' },
+            { cams: ['canon-c50'], res: '7K 3:2 (Open Gate)', fps: ['25'], codec: 'Cinema RAW Light LT', br: 752, label: '752 Mbps (12-bit RAW LT)', min: 'CFEB ONLY' },
+            { cams: ['canon-c50'], res: '7K 3:2 (Open Gate)', fps: ['24', '23.98'], codec: 'Cinema RAW Light LT', br: 722, label: '722 Mbps (12-bit RAW LT)', min: 'CFEB ONLY' },
+
+            { cams: ['canon-c50'], res: '7K 17:9 (6960x3672)', fps: ['59.94'], codec: 'Cinema RAW Light LT', br: 1420, label: '1420 Mbps (12-bit RAW LT)', min: 'CFEB ONLY' },
+            { cams: ['canon-c50'], res: '7K 17:9 (6960x3672)', fps: ['50'], codec: 'Cinema RAW Light LT', br: 1180, label: '1180 Mbps (12-bit RAW LT)', min: 'CFEB ONLY' },
+            { cams: ['canon-c50'], res: '7K 17:9 (6960x3672)', fps: ['29.97'], codec: 'Cinema RAW Light LT', br: 710, label: '710 Mbps (12-bit RAW LT)', min: 'CFEB ONLY' },
+            { cams: ['canon-c50'], res: '7K 17:9 (6960x3672)', fps: ['25'], codec: 'Cinema RAW Light LT', br: 592, label: '592 Mbps (12-bit RAW LT)', min: 'CFEB ONLY' },
+            { cams: ['canon-c50'], res: '7K 17:9 (6960x3672)', fps: ['24', '23.98'], codec: 'Cinema RAW Light LT', br: 568, label: '568 Mbps (12-bit RAW LT)', min: 'CFEB ONLY' },
+
+            // XF-AVC Intra
+            { cams: ['canon-c50'], res: '4K (4096x2160 / 3840x2160)', fps: ['59.94'], codec: 'XF-AVC Intra', br: 1000, label: '1000 Mbps (4:2:2 10-bit)', min: 'CFEB ONLY' },
+            { cams: ['canon-c50'], res: '4K (4096x2160 / 3840x2160)', fps: ['50'], codec: 'XF-AVC Intra', br: 810, label: '810 Mbps (4:2:2 10-bit)', min: 'CFEB ONLY' },
+            { cams: ['canon-c50'], res: '4K (4096x2160 / 3840x2160)', fps: ['29.97', '25', '24', '23.98'], codec: 'XF-AVC Intra', br: 500, label: '500 / 410 Mbps (4:2:2 10-bit)', min: 'CFEB ONLY' },
+
+            // XF-AVC S / XF-HEVC S (Long GOP)
+            { cams: ['canon-c50'], res: '4K (4096x2160 / 3840x2160)', fps: ['119.88', '100'], codec: 'XF-AVC S Long GOP', br: 260, label: '260 / 230 Mbps (4:2:2 10-bit)', min: 'V90' },
+            { cams: ['canon-c50'], res: '4K (4096x2160 / 3840x2160)', fps: ['59.94', '50'], codec: 'XF-AVC S Long GOP', br: 250, label: '250 / 225 Mbps (4:2:2 10-bit)', min: 'V90' },
+            { cams: ['canon-c50'], res: '4K (4096x2160 / 3840x2160)', fps: ['29.97', '25', '24', '23.98'], codec: 'XF-AVC S Long GOP', br: 150, label: '150 / 135 Mbps (4:2:2 10-bit)', min: 'V60' },
+
+            { cams: ['canon-c50'], res: '4K (3840x2160)', fps: ['59.94', '50'], codec: 'XF-HEVC S (4:2:2)', br: 225, label: '225 Mbps (10-bit)', min: 'V90' },
+            { cams: ['canon-c50'], res: '4K (3840x2160)', fps: ['29.97', '25', '24', '23.98'], codec: 'XF-HEVC S (4:2:2)', br: 135, label: '135 Mbps (10-bit)', min: 'V60' },
+
+            { cams: ['canon-c50'], res: '4K (3840x2160)', fps: ['59.94', '50'], codec: 'XF-HEVC S (4:2:0)', br: 150, label: '150 Mbps (10-bit)', min: 'V60' },
+            { cams: ['canon-c50'], res: '4K (3840x2160)', fps: ['29.97', '25', '24', '23.98'], codec: 'XF-HEVC S (4:2:0)', br: 100, label: '100 Mbps (10-bit)', min: 'V30' },
+
+            // Proxy / HD
+            { cams: ['canon-c50'], res: '1920x1080', fps: ['59.94', '50', '29.97', '25', '24', '23.98'], codec: 'XF-AVC S (Proxy)', br: 50, label: '50 Mbps (4:2:2 10-bit)', min: 'V30' },
+            { cams: ['canon-c50'], res: '1920x1080', fps: ['119.88', '100', '180'], codec: 'XF-AVC S (HFR)', br: 100, label: '100 Mbps (4:2:2 10-bit)', min: 'V30' },
+
         ];
 
         // --- Add 1080p for Sony mirrorless (auto-generated to avoid bloat) ---
-        ['fx3', 'fx30', 'fx6', 'a7cii', 'a6700', 'zve10ii'].forEach(c => {
+        ['fx3', 'fx30', 'fx6', 'a7siii', 'a7cii', 'a6700', 'zve10ii'].forEach(c => {
             allModes.push({ cams: [c], res: '1920x1080', fps: ['23.98', '59.94'], codec: 'XAVC S HD', br: 50, label: '50 Mbps (4:2:2 10-bit)', min: 'V30' });
             allModes.push({ cams: [c], res: '1920x1080', fps: ['23.98', '59.94'], codec: 'XAVC S-I HD', br: 185, label: '222 Mbps (All-Intra)', min: 'V90' });
         });
@@ -1119,7 +1173,12 @@
                 customSize: "Custom...",
                 selectAll: "Select all parameters to see recording time.",
                 disclaimer: "Unofficial calculator tool based on manufacturer documentation. Built by Produtora Lumos.",
-                compatibleMedia: "Compatible media"
+                compatibleMedia: "Compatible media",
+                c50Raw: "💡 RAW: best quality for color grading. Significantly larger files.",
+                c50HighBr: "⚠️ Very high bitrate — CFexpress Type B mandatory",
+                c50Intra: "💡 All-Intra: ideal for editing/grading. Files 2–4× larger than Long GOP",
+                c50LongGop: "💡 H.265 Long GOP: smaller files. May require proxy for editing",
+                c50OpenGate: "ℹ️ Full-sensor mode (Open Gate) — verify workflow compatibility"
             },
             pt: {
                 subtitle: "Estimativas precisas para fluxos de cinema e mirrorless.",
@@ -1138,7 +1197,12 @@
                 customSize: "Personalizado...",
                 selectAll: "Selecione todos os parâmetros para ver o tempo.",
                 disclaimer: "Ferramenta não oficial baseada em documentação de fabricantes. Desenvolvido por Produtora Lumos.",
-                compatibleMedia: "Mídia compatível"
+                compatibleMedia: "Mídia compatível",
+                c50Raw: "💡 RAW: melhor qualidade para color grading. Arquivos significativamente maiores.",
+                c50HighBr: "⚠️ Bitrate altíssimo — CFexpress Type B obrigatório",
+                c50Intra: "💡 All-Intra: ideal para edição/grading. Arquivos 2–4× maiores que Long GOP",
+                c50LongGop: "💡 H.265 Long GOP: arquivos menores. Pode exigir proxy para edição",
+                c50OpenGate: "ℹ️ Modo full-sensor (Open Gate) — verificar compatibilidade com workflow"
             },
             es: {
                 subtitle: "Estimaciones precisas para flujos de cine y mirrorless.",
@@ -1157,7 +1221,12 @@
                 customSize: "Personalizado...",
                 selectAll: "Selecciona todos los parámetros para ver el tiempo.",
                 disclaimer: "Calculadora no oficial basada en documentación de fabricantes. Desarrollado por Produtora Lumos.",
-                compatibleMedia: "Media compatible"
+                compatibleMedia: "Media compatible",
+                c50Raw: "💡 RAW: mejor calidad para gradación de color. Archivos significativamente más grandes.",
+                c50HighBr: "⚠️ Bitrate muy alto — CFexpress Type B obligatorio",
+                c50Intra: "💡 All-Intra: ideal para edición/gradación. Archivos 2–4 veces más grandes que Long GOP",
+                c50LongGop: "💡 H.265 Long GOP: archivos más pequeños. Puede requerir proxy para edición",
+                c50OpenGate: "ℹ️ Modo de sensor completo (Open Gate) — verificar compatibilidad con workflow"
             }
         };
 
@@ -1302,34 +1371,35 @@
             }
         }
 
-        // Disable SD options when bitrate requires CFexpress
         function enforceStorageRestrictions() {
             if (!state.bitrate) return;
 
             const minReq = state.bitrate.min;
-            const isCFEAOnly = minReq.includes('CFEA ONLY');
+            const isCFMandatory = minReq && minReq.includes('ONLY');
             
             // Find SD optgroup and disable/enable its options
             const sdOptgroup = dom.storage.querySelector('[data-group="sd_sdxc"]');
             if (sdOptgroup) {
                 const sdOptions = sdOptgroup.querySelectorAll('option');
                 sdOptions.forEach(opt => {
-                    opt.disabled = isCFEAOnly;
+                    opt.disabled = isCFMandatory;
                 });
-                if (isCFEAOnly) {
+                if (isCFMandatory) {
                     sdOptgroup.setAttribute('label', '⛔ SD / SDXC — Too slow for this mode');
                 } else {
-                    sdOptgroup.setAttribute('label', storageGroups.sd_sdxc.label);
+                    const originalLabel = storageGroups.sd_sdxc.label;
+                    sdOptgroup.setAttribute('label', originalLabel);
                 }
             }
 
             // If current selection is in a now-disabled group, reset
-            if (isCFEAOnly && state.storageGB > 0 && !state.isCustom) {
+            if (isCFMandatory && state.storageGB > 0 && !state.isCustom) {
                 const currentVal = dom.storage.value;
                 const selectedOpt = dom.storage.querySelector(`option[value="${currentVal}"]`);
                 if (selectedOpt && selectedOpt.disabled) {
                     dom.storage.value = '';
                     state.storageGB = 0;
+                    dom.storage.selectedIndex = 0;
                 }
             }
         }
@@ -1356,37 +1426,43 @@
             if(!state.camera) return;
 
             // RESOLUTIONS
-            if(dom.res.disabled) {
-                const filteredRes = [...new Set(allModes.filter(m => m.cams.includes(state.camera)).map(m => m.res))];
+            const filteredRes = [...new Set(allModes.filter(m => m.cams.includes(state.camera)).map(m => m.res))];
+            if(dom.res.disabled || dom.res.innerHTML.includes('disabled')) {
                 fillSelect(dom.res, filteredRes);
                 dom.res.disabled = false;
             }
 
             // FPS
-            if(state.res && dom.fps.disabled) {
+            if(state.res) {
                 const filteredFps = [...new Set(allModes.filter(m => m.cams.includes(state.camera) && m.res === state.res).flatMap(m => m.fps))];
-                fillSelect(dom.fps, filteredFps.sort((a,b) => parseFloat(a)-parseFloat(b)));
-                dom.fps.disabled = false;
+                if(dom.fps.disabled || dom.fps.innerHTML.includes('selected>—')) {
+                    fillSelect(dom.fps, filteredFps.sort((a,b) => parseFloat(a)-parseFloat(b)));
+                    dom.fps.disabled = false;
+                }
             }
 
             // CODEC
-            if(state.fps && dom.codec.disabled) {
+            if(state.fps) {
                 const filteredCodec = [...new Set(allModes.filter(m => m.cams.includes(state.camera) && m.res === state.res && m.fps.includes(state.fps)).map(m => m.codec))];
-                fillSelect(dom.codec, filteredCodec);
-                dom.codec.disabled = false;
+                if(dom.codec.disabled || dom.codec.innerHTML.includes('selected>—')) {
+                    fillSelect(dom.codec, filteredCodec);
+                    dom.codec.disabled = false;
+                }
             }
 
             // BITRATE
-            if(state.codec && dom.bitrate.disabled) {
+            if(state.codec) {
                 const filteredBr = allModes.filter(m => m.cams.includes(state.camera) && m.res === state.res && m.fps.includes(state.fps) && m.codec === state.codec);
-                dom.bitrate.innerHTML = '<option value="" disabled selected>—</option>';
-                filteredBr.forEach(m => {
-                    const opt = document.createElement('option');
-                    opt.value = m.br;
-                    opt.textContent = m.label;
-                    dom.bitrate.appendChild(opt);
-                });
-                dom.bitrate.disabled = false;
+                if(dom.bitrate.disabled || dom.bitrate.innerHTML.includes('selected>—')) {
+                    dom.bitrate.innerHTML = '<option value="" disabled selected>—</option>';
+                    filteredBr.forEach(m => {
+                        const opt = document.createElement('option');
+                        opt.value = m.br;
+                        opt.textContent = m.label;
+                        dom.bitrate.appendChild(opt);
+                    });
+                    dom.bitrate.disabled = false;
+                }
             }
         }
 
@@ -1403,7 +1479,7 @@
         function calculate() {
             const ready = state.camera && state.res && state.fps && state.codec && state.bitrate && state.storageGB > 0;
             
-            if(ready) {
+            if(ready && state.bitrate.br) {
                 const storageGB = state.storageGB;
                 const bitrateMbps = state.bitrate.br;
                 
@@ -1438,6 +1514,27 @@
             const isFX3 = state.camera === 'fx3';
             const isFX30 = state.camera === 'fx30';
             const isFX6 = state.camera === 'fx6';
+            const isC50 = state.camera === 'canon-c50';
+
+            // Canon C50 specific warnings
+            if (isC50) {
+                const dict = i18n[state.lang];
+                if (state.codec && state.codec.includes('RAW')) {
+                    addWarning(dict.c50Raw, 'info');
+                    if (state.codec.includes('HQ')) {
+                        addWarning(dict.c50HighBr, 'warning');
+                    }
+                }
+                if (state.codec && (state.codec.includes('Intra'))) {
+                    addWarning(dict.c50Intra, 'info');
+                }
+                if (state.codec && (state.codec.includes('HEVC') || state.codec.includes('Long GOP'))) {
+                    addWarning(dict.c50LongGop, 'info');
+                }
+                if (state.res && state.res.includes('Open Gate')) {
+                    addWarning(dict.c50OpenGate, 'info');
+                }
+            }
 
             // FX3/FX6 Crop
             if((isFX3 || isFX6) && (state.fps === '119.88' || state.fps === '100')) {
