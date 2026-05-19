@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lumos × LOI — Captação &amp; Edição</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{
+      --bg:#1e1e1e;--bg2:#2a2a2a;--txt:#ffffff;--txt2:#8a8884;--muted:#5a5855;
+      --yellow:#EFC700;--ff-d:'Poppins',sans-serif;--ff-b:'Work Sans',sans-serif;
+    }
+    body{font-family:var(--ff-b);background:var(--bg);color:var(--txt);overflow:hidden;width:100vw;height:100vh;}
+    #grain{position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:0.038;}
+    .deck{width:100%;height:100%;position:relative;}
+    .slide{
+      position:absolute;inset:0;width:100%;height:100%;
+      display:flex;flex-direction:column;justify-content:center;
+      opacity:0;pointer-events:none;transition:opacity 0.5s ease;
+      padding:5vh 7vw 9vh;
+      background:linear-gradient(135deg,#181818 0%,#1e1e1e 40%,#282828 100%);
+    }
+    .slide::before{content:'';position:absolute;inset:0;pointer-events:none;
+      background:radial-gradient(ellipse at 15% 65%,rgba(239,199,0,0.05) 0%,transparent 55%),
+                 radial-gradient(ellipse at 85% 15%,rgba(255,255,255,0.012) 0%,transparent 48%);}
+    .slide.active{opacity:1;pointer-events:all;}
+    .foot{position:absolute;bottom:3vh;left:7vw;right:7vw;display:flex;align-items:center;justify-content:space-between;font-size:clamp(0.55rem,0.72vw,0.68rem);color:var(--muted);font-family:var(--ff-b);}
+    .logo-img{height:1.2rem;width:auto;display:block;}
+
+    /* Pills */
+    .pill{display:inline-block;background:var(--yellow);color:#1c1b1a;font-family:var(--ff-b);font-size:clamp(0.58rem,0.8vw,0.72rem);font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:0.4em 1.3em;border-radius:999px;}
+
+    /* Animations */
+    @keyframes up{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:translateY(0);}}
+    @keyframes fi{from{opacity:0;}to{opacity:1;}}
+    .slide.active .a1{animation:up 0.65s ease 0.05s both;}
+    .slide.active .a2{animation:up 0.65s ease 0.18s both;}
+    .slide.active .a3{animation:up 0.65s ease 0.32s both;}
+    .slide.active .a4{animation:up 0.65s ease 0.47s both;}
+    .slide.active .a5{animation:up 0.65s ease 0.62s both;}
+    .slide.active .af{animation:fi 1s ease 0.15s both;}
+
+    /* Typography */
+    .eyebrow{font-family:var(--ff-b);font-weight:400;letter-spacing:0.06em;color:var(--txt2);font-size:clamp(0.75rem,1vw,0.95rem);margin-bottom:0.6rem;}
+    h2.section{font-family:var(--ff-d);font-weight:800;font-size:clamp(2rem,4.5vw,4.5rem);line-height:1;letter-spacing:-0.025em;}
+    p.body-lg{font-family:var(--ff-b);font-weight:400;font-size:clamp(0.95rem,1.4vw,1.3rem);line-height:1.65;color:var(--txt2);max-width:60ch;}
+    p.body-lg b{color:var(--txt);font-weight:600;}
+    .yellow{color:var(--yellow);}
+    .hl{position:relative;display:inline-block;}
+    .hl::after{content:'';position:absolute;bottom:-3px;left:0;right:0;height:3px;background:var(--yellow);border-radius:2px;}
+
+    /* Cards */
+    .card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:16px;padding:2rem 1.8rem;transition:transform 0.25s ease,border-color 0.25s ease,background 0.25s ease;cursor:default;}
+    .card:hover{transform:translateY(-5px);background:rgba(255,255,255,0.07);border-color:rgba(239,199,0,0.35);}
+    .card-y{background:rgba(239,199,0,0.07);border:1px solid rgba(239,199,0,0.2);border-radius:16px;padding:2rem 1.8rem;}
+
+    /* Lists */
+    .inc-list{display:flex;flex-direction:column;gap:0.5rem;margin-top:0.8rem;}
+    .inc-item{display:flex;gap:0.65rem;align-items:flex-start;}
+    .inc-dot{width:4px;height:4px;border-radius:50%;background:var(--yellow);margin-top:0.5rem;flex-shrink:0;}
+    .inc-txt{font-size:clamp(0.72rem,0.95vw,0.88rem);color:var(--txt2);line-height:1.45;}
+
+    /* Pricing tables */
+    .ptable{width:100%;border-collapse:collapse;}
+    .ptable th{font-family:var(--ff-b);font-weight:600;font-size:clamp(0.6rem,0.78vw,0.72rem);letter-spacing:0.07em;text-transform:uppercase;color:var(--txt2);padding:0.6rem 1rem;text-align:left;border-bottom:1px solid rgba(255,255,255,0.07);}
+    .ptable td{font-family:var(--ff-b);font-size:clamp(0.75rem,1vw,0.92rem);color:var(--txt);padding:0.7rem 1rem;border-bottom:1px solid rgba(255,255,255,0.04);}
+    .ptable tr:last-child td{border-bottom:none;}
+    .ptable td.plan{font-family:var(--ff-d);font-weight:700;font-size:clamp(0.9rem,1.2vw,1.1rem);}
+    .ptable td.price{font-family:var(--ff-d);font-weight:800;color:var(--yellow);font-size:clamp(0.9rem,1.2vw,1.1rem);}
+    .ptable tr.highlight td{background:rgba(239,199,0,0.06);}
+    .ptable-wrap{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;overflow:hidden;padding:0.4rem 0;}
+    .ptable tbody tr{transition:background 0.18s ease;cursor:default;}
+    .ptable tbody tr:hover td{background:rgba(239,199,0,0.13)!important;}
+
+    /* Combined table */
+    .ctable{width:100%;border-collapse:collapse;}
+    .ctable th{font-family:var(--ff-b);font-weight:600;font-size:clamp(0.55rem,0.72vw,0.66rem);letter-spacing:0.06em;text-transform:uppercase;color:var(--txt2);padding:0.55rem 0.8rem;border-bottom:1px solid rgba(255,255,255,0.08);}
+    .ctable th:first-child{border-right:1px solid rgba(255,255,255,0.08);}
+    .ctable td{font-family:var(--ff-b);font-size:clamp(0.68rem,0.9vw,0.84rem);color:var(--txt);padding:0.6rem 0.8rem;border-bottom:1px solid rgba(255,255,255,0.04);text-align:center;}
+    .ctable td:first-child{text-align:left;border-right:1px solid rgba(255,255,255,0.06);font-weight:600;color:var(--txt2);}
+    .ctable tr:last-child td{border-bottom:none;}
+    .ctable td.best{color:var(--yellow);font-family:var(--ff-d);font-weight:700;}
+    .ctable tr.row-hl td{background:rgba(239,199,0,0.04);}
+    .ctable-wrap{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;overflow:hidden;padding:0.4rem 0;}
+    .ctable tbody tr{transition:background 0.18s ease;cursor:default;}
+    .ctable tbody tr:hover td{background:rgba(239,199,0,0.13)!important;}
+
+    /* Method phases */
+    .phase-row{display:flex;gap:0;align-items:stretch;}
+    .phase{flex:1;display:flex;flex-direction:column;gap:0.4rem;padding:1.2rem 1rem;border-right:1px solid rgba(255,255,255,0.06);transition:background 0.2s ease;cursor:default;}
+    .phase:hover{background:rgba(239,199,0,0.08);}
+    .phase:last-child{border-right:none;}
+    .phase-num{font-family:var(--ff-d);font-weight:800;font-size:clamp(1.4rem,2.5vw,2.2rem);color:rgba(239,199,0,0.15);line-height:1;}
+    .phase-title{font-family:var(--ff-d);font-weight:700;font-size:clamp(0.75rem,1.1vw,1rem);color:var(--txt);margin-top:0.2rem;}
+    .phase-desc{font-size:clamp(0.62rem,0.82vw,0.76rem);color:var(--txt2);line-height:1.4;}
+    .phase-wrap{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;overflow:hidden;}
+
+    /* Plan box hover */
+    .plan-box-hover:hover{background:rgba(239,199,0,0.15)!important;border-color:rgba(239,199,0,0.4)!important;}
+
+    /* Bstrip */
+    .bstrip{display:flex;align-items:center;gap:1rem;padding:0.8rem 1.2rem;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);}
+    .bstrip-icon{width:2rem;height:2rem;border-radius:8px;background:rgba(239,199,0,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1rem;}
+    .bstrip-text{font-size:clamp(0.78rem,1vw,0.92rem);color:var(--txt);}
+    .bstrip-text b{color:var(--yellow);}
+  </style>
+</head>
+<body>
+<div class="deck">
+
+<!-- S1: CAPA LUMOS × LOI -->
+<div class="slide active" id="s1" style="justify-content:center;align-items:center;padding:0;">
+  <div style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 75% 55% at 50% 50%,rgba(60,55,40,0.6) 0%,transparent 70%);"></div>
+  <div class="af" style="position:relative;display:flex;flex-direction:column;align-items:center;gap:2.4rem;text-align:center;">
+    <div style="display:flex;align-items:center;justify-content:center;gap:3vw;flex-wrap:wrap;">
+      <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iTGF5ZXJfMiIgZGF0YS1uYW1lPSJMYXllciAyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIwIDAgOTE5Ljg3IDE3NS45Ij4KICA8ZGVmcz4KICAgIDxzdHlsZT4KICAgICAgLmNscy0xIHsKICAgICAgICBmaWxsOiBub25lOwogICAgICB9CgogICAgICAuY2xzLTIgewogICAgICAgIGZpbGw6IHVybCgjbGluZWFyLWdyYWRpZW50KTsKICAgICAgfQoKICAgICAgLmNscy0zIHsKICAgICAgICBmaWxsOiAjZmZmOwogICAgICB9CgogICAgICAuY2xzLTQgewogICAgICAgIGZpbGw6ICNlZmM3MDA7CiAgICAgIH0KCiAgICAgIC5jbHMtNSB7CiAgICAgICAgY2xpcC1wYXRoOiB1cmwoI2NsaXBwYXRoKTsKICAgICAgfQogICAgPC9zdHlsZT4KICAgIDxjbGlwUGF0aCBpZD0iY2xpcHBhdGgiPgogICAgICA8cmVjdCBjbGFzcz0iY2xzLTEiIHk9Ii4wNyIgd2lkdGg9IjE3NS43NiIgaGVpZ2h0PSIxNzUuNzYiIHJ4PSIyOC40NiIgcnk9IjI4LjQ2Ii8+CiAgICA8L2NsaXBQYXRoPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJsaW5lYXItZ3JhZGllbnQiIHgxPSItMTUzLjM5IiB5MT0iMTMwLjU3IiB4Mj0iMTY2Ljc3IiB5Mj0iMTMwLjU3IiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmZiIgc3RvcC1vcGFjaXR5PSIwIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2ZmZiIgc3RvcC1vcGFjaXR5PSIuOSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPGcgaWQ9IkxheWVyXzMiIGRhdGEtbmFtZT0iTGF5ZXIgMyI+CiAgICA8ZyBpZD0iTGF5ZXJfNSIgZGF0YS1uYW1lPSJMYXllciA1Ij4KICAgICAgPGc+CiAgICAgICAgPHBhdGggY2xhc3M9ImNscy0zIiBkPSJNMjQwLjgxLDE3NS4xN2MtMS4yNS44NC0yLjI0LS4xNi0yLjI0LTEuNGwxLjI1LTg0LjkzLTEuMjUtODYuNmMwLTEuMjUsMS0yLjI0LDIuMjQtMi4yNGgzNC4xMmMxLjI1LDAsMi4yNCwxLDIuMjQsMi4yNGwtMSw4NC4zNiwxLDYxLjI3aDEwMS43YzEuMjUsMCwyLjI0LDEsMi4yNCwyLjI0djIzLjY2YzAsMS4yNC0xLDIuMjQtMi4yNCwxLjRoLTEzOC4wNloiLz4KICAgICAgICA8cGF0aCBjbGFzcz0iY2xzLTMiIGQ9Ik0zNzYuMiwxNzUuNjVjLTI3LjE1LDAtNDQuODMtMTguNDMtNDQuODMtNDkuODF2LTI2LjlsLS41LTUyLjNjMC0xLjI1LDEtMi4yNCwyLjI0LTIuMjRoMzMuMzdjMS4yNSwwLDIuMjQsMSwyLjI0LDIuMjRsLS43NSw1Mi4zdjI2LjRjMCwxMy45NSw4LjQ3LDIyLjkxLDE5LjY4LDIyLjkxLDEzLjQ1LDAsMjcuODktMTIuNDUsMjcuODktMzkuODV2LTkuNDZsLS41LTUyLjNjMC0xLjI1LDEtMi4yNCwyLjI0LTIuMjRoMzMuODdjMS4yNSwwLDIuMjQsMSwyLjI0LDIuMjRsLS43NSw1OS4yNy4yNSw2NC41YzAsMS4yNC0xLDIuMjQtMi4yNCwyLjI0aC0zMS42M2MtMS4yNSwwLTIuMjQtMS0yLjI0LTIuMjRsLjc1LTEzLjk1Yy04LjcyLDExLjIxLTIzLjQxLDE5LjE4LTQxLjM0LDE5LjE4WiIvPgogICAgICAgIDxwYXRoIGNsYXNzPSJjbHMtMyIgZD0iTTUwMi43MSwxMjYuNTlsLjc1LDQzLjgzYzAsMS4yNC0xLDIuMjQtMi4yNCwyLjI0aC0zNC4xMmMtMS4yNSwwLTIuMjQtMS0yLjI0LTIuMjRsLjc1LTQzLjgzLS4yNS03OS45NWMwLTEuMjUsMS0yLjI0LDIuMjQtMi4yNGgzMS44OGMxLjI1LDAsMi4yNCwxLDIuMjQsMi4yNGwtLjc1LDEzLjk1YzguOTctMTIuNDUsMjAuNDItMTkuMTgsMzYuODYtMTkuMTgsMTcuOTMsMCwzMC42Myw3LjcyLDM2LjYxLDI0LjE2LDEwLjk2LTE5LjQzLDIzLjkxLTI0LjE2LDM5LjEtMjQuMTYsMjUuOSwwLDQwLjg0LDE1LjY5LDQwLjg0LDQ5LjgxdjM1LjM3bC41LDQzLjgzYzAsMS4yNC0xLDIuMjQtMi4yNCwyLjI0aC0zMy42MmMtMS4yNCwwLTIuMjQtMS0yLjI0LTIuMjRsLjc1LTQzLjgzdi0zNC44N2MwLTE1LjQ0LTYuMjMtMjIuOTEtMTYuNDQtMjIuOTFzLTIyLjY2LDEzLjctMjIuNjYsMzkuODV2MTcuOTNsLjc1LDQzLjgzYzAsMS4yNC0xLDIuMjQtMi4yNCwyLjI0aC0zMy42MmMtMS4yNSwwLTIuMjQtMS0yLjI0LTIuMjRsLjc1LTQzLjgzdi0zNC44N2MwLTE1LjQ0LTUuOTgtMjIuOTEtMTYuNDQtMjIuOTFzLTIyLjY2LDEzLjctMjIuNjYsMzkuODV2MTcuOTNaIi8+CiAgICAgICAgPHBhdGggY2xhc3M9ImNscy0zIiBkPSJNNzI4LjM1LDE3NS45Yy00MS44NCwwLTY2LTI2LjE1LTY2LTY3czI0LjE2LTY3Ljc0LDY2LTY3Ljc0LDY1LjUsMjYuMTUsNjUuNSw2Ny0yMy42Niw2Ny43NC02NS41LDY3Ljc0Wk03MjguMzUsMTUwLjk5YzE4LjQzLDAsMjcuMTUtMTIuNywyNy4xNS00Mi4wOXMtOC45Ny00Mi44NC0yNy40LTQyLjg0Yy0xOC45My4yNS0yNy42NCwxNC4yLTI3LjY0LDQzLjA5czkuMjEsNDEuODQsMjcuODksNDEuODRaIi8+CiAgICAgICAgPHBhdGggY2xhc3M9ImNscy0zIiBkPSJNODU5Ljg1LDE3NS42NWMtMzcuMzYsMC02MS4yNy0xNS4xOS02Mi41MS00My44MywwLTEuMjQsMS0yLjI0LDIuMjQtMi4yNGgzMS44OGMxLjI1LDAsMi4yNCwxLDIuMjQsMi4yNCwxLDE0LjQ1LDEwLjQ2LDIwLjY3LDI3Ljg5LDIwLjY3LDE0LjY5LDAsMjIuNjYtNS43MywyMi42Ni0xNS42OSwwLTI0LjQxLTgzLjkzLS43NS04My45My01NC41NCwwLTI2LjY1LDIxLjQyLTQwLjg0LDU2LjA0LTQwLjg0czU2LjI5LDEzLjQ1LDU4LjUzLDQwLjM1Yy4yNSwxLjI1LS43NSwyLjI0LTEuOTksMi4yNGgtMzAuMzhjLTEuMjQsMC0yLjI0LTEtMi40OS0yLjI0LTEuOTktMTAuOTYtOC45Ny0xNy42OC0yNC4xNi0xNy42OC0xMi4yLDAtMTkuOTMsNC40OC0xOS45MywxNS40NCwwLDI0LjQxLDgzLjkzLS41LDgzLjkzLDU0LjA0LDAsMjYuOS0yNS40LDQyLjA5LTYwLjAyLDQyLjA5WiIvPgogICAgICAgIDxnPgogICAgICAgICAgPHJlY3QgY2xhc3M9ImNscy00IiB5PSIuMDciIHdpZHRoPSIxNzUuNzYiIGhlaWdodD0iMTc1Ljc2IiByeD0iMjguNDYiIHJ5PSIyOC40NiIvPgogICAgICAgICAgPGcgY2xhc3M9ImNscy01Ij4KICAgICAgICAgICAgPHBhdGggY2xhc3M9ImNscy0yIiBkPSJNMTY2Ljc3LDYuMjdsLTM2LjQ4LDIwNS4xOWMtNS4wOSwyOC42LTMyLjQsNDcuNjctNjEsNDIuNThsLTIyMi42OC0zOS41OSIvPgogICAgICAgICAgPC9nPgogICAgICAgIDwvZz4KICAgICAgPC9nPgogICAgPC9nPgogIDwvZz4KPC9zdmc+" alt="Lumos" style="height:clamp(3rem,8vw,7rem);width:auto;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:0.3rem;">
+        <span style="font-family:var(--ff-d);font-weight:800;font-size:clamp(2rem,6vw,5.5rem);color:rgba(239,199,0,0.35);letter-spacing:-0.04em;line-height:1;">×</span>
+      </div>
+      <div style="background:#fff;border-radius:16px;padding:0.6rem 1.2rem;display:flex;align-items:center;justify-content:center;">
+        <img src="data:image/png;base64,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" alt="LOI" style="height:clamp(3rem,8vw,7rem);width:auto;display:block;filter:none;">
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:0.5rem;align-items:center;">
+      <p style="font-family:var(--ff-b);font-size:clamp(0.85rem,1.4vw,1.2rem);color:var(--txt2);letter-spacing:0.04em;">Proposta de Captação &amp; Edição</p>
+      <div style="width:3rem;height:2px;background:var(--yellow);border-radius:2px;"></div>
+    </div>
+  </div>
+  <p style="position:absolute;bottom:3.5vh;left:7vw;font-family:var(--ff-b);font-size:clamp(0.55rem,0.7vw,0.65rem);color:var(--muted);">© 2026 Lumos. Confidencial — uso restrito à LOI.</p>
+</div>
+
+<!-- S2: MÉTODO LUMOS -->
+<div class="slide" id="s2">
+  <div class="a1" style="margin-bottom:1.8rem;"><span class="pill">Método Lumos</span></div>
+  <h2 class="section a2" style="max-width:16ch;margin-bottom:0.6rem;">Do briefing à<br><span class="yellow">entrega final.</span></h2>
+  <p class="body-lg a3" style="margin-bottom:2rem;">5 fases que garantem <b>resultado sem surpresa</b> — para você e para o seu cliente.</p>
+  <div class="phase-wrap a4">
+    <div class="phase-row">
+      <div class="phase">
+        <div class="phase-num">01</div>
+        <div class="phase-title">Apresentação</div>
+        <div class="phase-desc">Alinhamos expectativas, entendemos o cliente e definimos o escopo.</div>
+      </div>
+      <div class="phase">
+        <div class="phase-num">02</div>
+        <div class="phase-title">Time &amp; Análise</div>
+        <div class="phase-desc">Montamos o time ideal e analisamos o briefing em detalhe.</div>
+      </div>
+      <div class="phase">
+        <div class="phase-num">03</div>
+        <div class="phase-title">Produção</div>
+        <div class="phase-desc">Captação e edição executadas com padrão técnico e criativo.</div>
+      </div>
+      <div class="phase">
+        <div class="phase-num">04</div>
+        <div class="phase-title">Revisão</div>
+        <div class="phase-desc">Ciclos de ajuste com controle de qualidade antes da entrega.</div>
+      </div>
+      <div class="phase">
+        <div class="phase-num">05</div>
+        <div class="phase-title">Entrega</div>
+        <div class="phase-desc">Arquivos finais organizados, prontos para publicação.</div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iTGF5ZXJfMiIgZGF0YS1uYW1lPSJMYXllciAyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIwIDAgOTE5Ljg3IDE3NS45Ij4KICA8ZGVmcz4KICAgIDxzdHlsZT4KICAgICAgLmNscy0xIHsKICAgICAgICBmaWxsOiBub25lOwogICAgICB9CgogICAgICAuY2xzLTIgewogICAgICAgIGZpbGw6IHVybCgjbGluZWFyLWdyYWRpZW50KTsKICAgICAgfQoKICAgICAgLmNscy0zIHsKICAgICAgICBmaWxsOiAjZmZmOwogICAgICB9CgogICAgICAuY2xzLTQgewogICAgICAgIGZpbGw6ICNlZmM3MDA7CiAgICAgIH0KCiAgICAgIC5jbHMtNSB7CiAgICAgICAgY2xpcC1wYXRoOiB1cmwoI2NsaXBwYXRoKTsKICAgICAgfQogICAgPC9zdHlsZT4KICAgIDxjbGlwUGF0aCBpZD0iY2xpcHBhdGgiPgogICAgICA8cmVjdCBjbGFzcz0iY2xzLTEiIHk9Ii4wNyIgd2lkdGg9IjE3NS43NiIgaGVpZ2h0PSIxNzUuNzYiIHJ4PSIyOC40NiIgcnk9IjI4LjQ2Ii8+CiAgICA8L2NsaXBQYXRoPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJsaW5lYXItZ3JhZGllbnQiIHgxPSItMTUzLjM5IiB5MT0iMTMwLjU3IiB4Mj0iMTY2Ljc3IiB5Mj0iMTMwLjU3IiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmZiIgc3RvcC1vcGFjaXR5PSIwIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2ZmZiIgc3RvcC1vcGFjaXR5PSIuOSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPGcgaWQ9IkxheWVyXzMiIGRhdGEtbmFtZT0iTGF5ZXIgMyI+CiAgICA8ZyBpZD0iTGF5ZXJfNSIgZGF0YS1uYW1lPSJMYXllciA1Ij4KICAgICAgPGc+CiAgICAgICAgPHBhdGggY2xhc3M9ImNscy0zIiBkPSJNMjQwLjgxLDE3NS4xN2MtMS4yNS44NC0yLjI0LS4xNi0yLjI0LTEuNGwxLjI1LTg0LjkzLTEuMjUtODYuNmMwLTEuMjUsMS0yLjI0LDIuMjQtMi4yNGgzNC4xMmMxLjI1LDAsMi4yNCwxLDIuMjQsMi4yNGwtMSw4NC4zNiwxLDYxLjI3aDEwMS43YzEuMjUsMCwyLjI0LDEsMi4yNCwyLjI0djIzLjY2YzAsMS4yNC0xLDIuMjQtMi4yNCwxLjRoLTEzOC4wNloiLz4KICAgICAgICA8cGF0aCBjbGFzcz0iY2xzLTMiIGQ9Ik0zNzYuMiwxNzUuNjVjLTI3LjE1LDAtNDQuODMtMTguNDMtNDQuODMtNDkuODF2LTI2LjlsLS41LTUyLjNjMC0xLjI1LDEtMi4yNCwyLjI0LTIuMjRoMzMuMzdjMS4yNSwwLDIuMjQsMSwyLjI0LDIuMjRsLS43NSw1Mi4zdjI2LjRjMCwxMy45NSw4LjQ3LDIyLjkxLDE5LjY4LDIyLjkxLDEzLjQ1LDAsMjcuODktMTIuNDUsMjcuODktMzkuODV2LTkuNDZsLS41LTUyLjNjMC0xLjI1LDEtMi4yNCwyLjI0LTIuMjRoMzMuODdjMS4yNSwwLDIuMjQsMSwyLjI0LDIuMjRsLS43NSw1OS4yNy4yNSw2NC41YzAsMS4yNC0xLDIuMjQtMi4yNCwyLjI0aC0zMS42M2MtMS4yNSwwLTIuMjQtMS0yLjI0LTIuMjRsLjc1LTEzLjk1Yy04LjcyLDExLjIxLTIzLjQxLDE5LjE4LTQxLjM0LDE5LjE4WiIvPgogICAgICAgIDxwYXRoIGNsYXNzPSJjbHMtMyIgZD0iTTUwMi43MSwxMjYuNTlsLjc1LDQzLjgzYzAsMS4yNC0xLDIuMjQtMi4yNCwyLjI0aC0zNC4xMmMtMS4yNSwwLTIuMjQtMS0yLjI0LTIuMjRsLjc1LTQzLjgzLS4yNS03OS45NWMwLTEuMjUsMS0yLjI0LDIuMjQtMi4yNGgzMS44OGMxLjI1LDAsMi4yNCwxLDIuMjQsMi4yNGwtLjc1LDEzLjk1YzguOTctMTIuNDUsMjAuNDItMTkuMTgsMzYuODYtMTkuMTgsMTcuOTMsMCwzMC42Myw3LjcyLDM2LjYxLDI0LjE2LDEwLjk2LTE5LjQzLDIzLjkxLTI0LjE2LDM5LjEtMjQuMTYsMjUuOSwwLDQwLjg0LDE1LjY5LDQwLjg0LDQ5LjgxdjM1LjM3bC41LDQzLjgzYzAsMS4yNC0xLDIuMjQtMi4yNCwyLjI0aC0zMy42MmMtMS4yNCwwLTIuMjQtMS0yLjI0LTIuMjRsLjc1LTQzLjgzdi0zNC44N2MwLTE1LjQ0LTYuMjMtMjIuOTEtMTYuNDQtMjIuOTFzLTIyLjY2LDEzLjctMjIuNjYsMzkuODV2MTcuOTNsLjc1LDQzLjgzYzAsMS4yNC0xLDIuMjQtMi4yNCwyLjI0aC0zMy42MmMtMS4yNSwwLTIuMjQtMS0yLjI0LTIuMjRsLjc1LTQzLjgzdi0zNC44N2MwLTE1LjQ0LTUuOTgtMjIuOTEtMTYuNDQtMjIuOTFzLTIyLjY2LDEzLjctMjIuNjYsMzkuODV2MTcuOTNaIi8+CiAgICAgICAgPHBhdGggY2xhc3M9ImNscy0zIiBkPSJNNzI4LjM1LDE3NS45Yy00MS44NCwwLTY2LTI2LjE1LTY2LTY3czI0LjE2LTY3Ljc0LDY2LTY3Ljc0LDY1LjUsMjYuMTUsNjUuNSw2Ny0yMy42Niw2Ny43NC02NS41LDY3Ljc0Wk03MjguMzUsMTUwLjk5YzE4LjQzLDAsMjcuMTUtMTIuNywyNy4xNS00Mi4wOXMtOC45Ny00Mi44NC0yNy40LTQyLjg0Yy0xOC45My4yNS0yNy42NCwxNC4yLTI3LjY0LDQzLjA5czkuMjEsNDEuODQsMjcuODksNDEuODRaIi8+CiAgICAgICAgPHBhdGggY2xhc3M9ImNscy0zIiBkPSJNODU5Ljg1LDE3NS42NWMtMzcuMzYsMC02MS4yNy0xNS4xOS02Mi41MS00My44MywwLTEuMjQsMS0yLjI0LDIuMjQtMi4yNGgzMS44OGMxLjI1LDAsMi4yNCwxLDIuMjQsMi4yNCwxLDE0LjQ1LDEwLjQ2LDIwLjY3LDI3Ljg5LDIwLjY3LDE0LjY5LDAsMjIuNjYtNS43MywyMi42Ni0xNS42OSwwLTI0LjQxLTgzLjkzLS43NS04My45My01NC41NCwwLTI2LjY1LDIxLjQyLTQwLjg0LDU2LjA0LTQwLjg0czU2LjI5LDEzLjQ1LDU4LjUzLDQwLjM1Yy4yNSwxLjI1LS43NSwyLjI0LTEuOTksMi4yNGgtMzAuMzhjLTEuMjQsMC0yLjI0LTEtMi40OS0yLjI0LTEuOTktMTAuOTYtOC45Ny0xNy42OC0yNC4xNi0xNy42OC0xMi4yLDAtMTkuOTMsNC40OC0xOS45MywxNS40NCwwLDI0LjQxLDgzLjkzLS41LDgzLjkzLDU0LjA0LDAsMjYuOS0yNS40LDQyLjA5LTYwLjAyLDQyLjA5WiIvPgogICAgICAgIDxnPgogICAgICAgICAgPHJlY3QgY2xhc3M9ImNscy00IiB5PSIuMDciIHdpZHRoPSIxNzUuNzYiIGhlaWdodD0iMTc1Ljc2IiByeD0iMjguNDYiIHJ5PSIyOC40NiIvPgogICAgICAgICAgPGcgY2xhc3M9ImNscy01Ij4KICAgICAgICAgICAgPHBhdGggY2xhc3M9ImNscy0yIiBkPSJNMTY2Ljc3LDYuMjdsLTM2LjQ4LDIwNS4xOWMtNS4wOSwyOC42LTMyLjQsNDcuNjctNjEsNDIuNThsLTIyMi42OC0zOS41OSIvPgogICAgICAgICAgPC9nPgogICAgICAgIDwvZz4KICAgICAgPC9nPgogICAgPC9nPgogIDwvZz4KPC9zdmc+" alt="Lumos" class="logo-img"><span>© 2026 Lumos × LOI</span></div>
+</div>
+
+<!-- S3: CAPTAÇÃO -->
+<div class="slide" id="s3">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:5vw;align-items:center;height:100%;max-height:75vh;">
+    <div>
+      <div class="pill a1" style="margin-bottom:1.8rem;">Captação</div>
+      <h2 class="section a2" style="margin-bottom:1rem;">Gravação que<br><span class="yellow">funciona.</span></h2>
+      <p class="body-lg a3" style="margin-bottom:1.5rem;">Time completo de filmmakers e produção dedicados a fazer cada dia de gravação ser <b>eficiente do primeiro ao último take.</b></p>
+      <div class="inc-list a4">
+        <div class="inc-item"><div class="inc-dot"></div><span class="inc-txt">2 Filmmakers profissionais</span></div>
+        <div class="inc-item"><div class="inc-dot"></div><span class="inc-txt">Gerente de Projetos dedicado</span></div>
+        <div class="inc-item"><div class="inc-dot"></div><span class="inc-txt">Coordenador de Produção</span></div>
+        <div class="inc-item"><div class="inc-dot"></div><span class="inc-txt">Equipamento profissional incluso</span></div>
+        <div class="inc-item"><div class="inc-dot"></div><span class="inc-txt">Reunião mensal de alinhamento</span></div>
+        <div class="inc-item"><div class="inc-dot"></div><span class="inc-txt">Canal direto via WhatsApp</span></div>
+      </div>
+    </div>
+    <div class="a3" style="display:flex;flex-direction:column;gap:1.2rem;">
+      <div class="card-y" style="border-radius:16px;padding:2rem;">
+        <div style="font-family:var(--ff-b);font-size:clamp(0.6rem,0.78vw,0.7rem);font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:rgba(239,199,0,0.7);margin-bottom:0.6rem;">O que está incluso</div>
+        <div style="font-family:var(--ff-d);font-weight:700;font-size:clamp(1rem,1.6vw,1.4rem);color:var(--txt);line-height:1.3;">Captação completa — do set ao arquivo final entregue.</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.8rem;">
+        <div class="plan-box-hover" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:1.2rem 1rem;display:flex;flex-direction:column;gap:0.4rem;cursor:default;transition:background 0.2s,border-color 0.2s;">
+          <div style="font-family:var(--ff-d);font-weight:800;font-size:clamp(1.3rem,2vw,1.8rem);color:var(--txt);">P</div>
+          <div style="font-size:clamp(0.62rem,0.8vw,0.72rem);color:var(--txt2);">1 diária/mês</div>
+        </div>
+        <div class="plan-box-hover" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:1.2rem 1rem;display:flex;flex-direction:column;gap:0.4rem;cursor:default;transition:background 0.2s,border-color 0.2s;">
+          <div style="font-family:var(--ff-d);font-weight:800;font-size:clamp(1.3rem,2vw,1.8rem);color:var(--yellow);">M</div>
+          <div style="font-size:clamp(0.62rem,0.8vw,0.72rem);color:var(--txt2);">3 diárias/mês</div>
+        </div>
+        <div class="plan-box-hover" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:1.2rem 1rem;display:flex;flex-direction:column;gap:0.4rem;cursor:default;transition:background 0.2s,border-color 0.2s;">
+          <div style="font-family:var(--ff-d);font-weight:800;font-size:clamp(1.3rem,2vw,1.8rem);color:var(--txt);">G</div>
+          <div style="font-size:clamp(0.62rem,0.8vw,0.72rem);color:var(--txt2);">6 diárias/mês</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iTGF5ZXJfMiIgZGF0YS1uYW1lPSJMYXllciAyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIwIDAgOTE5Ljg3IDE3NS45Ij4KICA8ZGVmcz4KICAgIDxzdHlsZT4KICAgICAgLmNscy0xIHsKICAgICAgICBmaWxsOiBub25lOwogICAgICB9CgogICAgICAuY2xzLTIgewogICAgICAgIGZpbGw6IHVybCgjbGluZWFyLWdyYWRpZW50KTsKICAgICAgfQoKICAgICAgLmNscy0zIHsKICAgICAgICBmaWxsOiAjZmZmOwogICAgICB9CgogICAgICAuY2xzLTQgewogICAgICAgIGZpbGw6ICNlZmM3MDA7CiAgICAgIH0KCiAgICAgIC5jbHMtNSB7CiAgICAgICAgY2xpcC1wYXRoOiB1cmwoI2NsaXBwYXRoKTsKICAgICAgfQogICAgPC9zdHlsZT4KICAgIDxjbGlwUGF0aCBpZD0iY2xpcHBhdGgiPgogICAgICA8cmVjdCBjbGFzcz0iY2xzLTEiIHk9Ii4wNyIgd2lkdGg9IjE3NS43NiIgaGVpZ2h0PSIxNzUuNzYiIHJ4PSIyOC40NiIgcnk9IjI4LjQ2Ii8+CiAgICA8L2NsaXBQYXRoPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJsaW5lYXItZ3JhZGllbnQiIHgxPSItMTUzLjM5IiB5MT0iMTMwLjU3IiB4Mj0iMTY2Ljc3IiB5Mj0iMTMwLjU3IiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmZiIgc3RvcC1vcGFjaXR5PSIwIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2ZmZiIgc3RvcC1vcGFjaXR5PSIuOSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPGcgaWQ9IkxheWVyXzMiIGRhdGEtbmFtZT0iTGF5ZXIgMyI+CiAgICA8ZyBpZD0iTGF5ZXJfNSIgZGF0YS1uYW1lPSJMYXllciA1Ij4KICAgICAgPGc+CiAgICAgICAgPHBhdGggY2xhc3M9ImNscy0zIiBkPSJNMjQwLjgxLDE3NS4xN2MtMS4yNS44NC0yLjI0LS4xNi0yLjI0LTEuNGwxLjI1LTg0LjkzLTEuMjUtODYuNmMwLTEuMjUsMS0yLjI0LDIuMjQtMi4yNGgzNC4xMmMxLjI1LDAsMi4yNCwxLDIuMjQsMi4yNGwtMSw4NC4zNiwxLDYxLjI3aDEwMS43YzEuMjUsMCwyLjI0LDEsMi4yNCwyLjI0djIzLjY2YzAsMS4yNC0xLDIuMjQtMi4yNCwxLjRoLTEzOC4wNloiLz4KICAgICAgICA8cGF0aCBjbGFzcz0iY2xzLTMiIGQ9Ik0zNzYuMiwxNzUuNjVjLTI3LjE1LDAtNDQuODMtMTguNDMtNDQuODMtNDkuODF2LTI2LjlsLS41LTUyLjNjMC0xLjI1LDEtMi4yNCwyLjI0LTIuMjRoMzMuMzdjMS4yNSwwLDIuMjQsMSwyLjI0LDIuMjRsLS43NSw1Mi4zdjI2LjRjMCwxMy45NSw4LjQ3LDIyLjkxLDE5LjY4LDIyLjkxLDEzLjQ1LDAsMjcuODktMTIuNDUsMjcuODktMzkuODV2LTkuNDZsLS41LTUyLjNjMC0xLjI1LDEtMi4yNCwyLjI0LTIuMjRoMzMuODdjMS4yNSwwLDIuMjQsMSwyLjI0LDIuMjRsLS43NSw1OS4yNy4yNSw2NC41YzAsMS4yNC0xLDIuMjQtMi4yNCwyLjI0aC0zMS42M2MtMS4yNSwwLTIuMjQtMS0yLjI0LTIuMjRsLjc1LTEzLjk1Yy04LjcyLDExLjIxLTIzLjQxLDE5LjE4LTQxLjM0LDE5LjE4WiIvPgogICAgICAgIDxwYXRoIGNsYXNzPSJjbHMtMyIgZD0iTTUwMi43MSwxMjYuNTlsLjc1LDQzLjgzYzAsMS4yNC0xLDIuMjQtMi4yNCwyLjI0aC0zNC4xMmMtMS4yNSwwLTIuMjQtMS0yLjI0LTIuMjRsLjc1LTQzLjgzLS4yNS03OS45NWMwLTEuMjUsMS0yLjI0LDIuMjQtMi4yNGgzMS44OGMxLjI1LDAsMi4yNCwxLDIuMjQsMi4yNGwtLjc1LDEzLjk1YzguOTctMTIuNDUsMjAuNDItMTkuMTgsMzYuODYtMTkuMTgsMTcuOTMsMCwzMC42Myw3LjcyLDM2LjYxLDI0LjE2LDEwLjk2LTE5LjQzLDIzLjkxLTI0LjE2LDM5LjEtMjQuMTYsMjUuOSwwLDQwLjg0LDE1LjY5LDQwLjg0LDQ5LjgxdjM1LjM3bC41LDQzLjgzYzAsMS4yNC0xLDIuMjQtMi4yNCwyLjI0aC0zMy42MmMtMS4yNCwwLTIuMjQtMS0yLjI0LTIuMjRsLjc1LTQzLjgzdi0zNC44N2MwLTE1LjQ0LTYuMjMtMjIuOTEtMTYuNDQtMjIuOTFzLTIyLjY2LDEzLjctMjIuNjYsMzkuODV2MTcuOTNsLjc1LDQzLjgzYzAsMS4yNC0xLDIuMjQtMi4yNCwyLjI0aC0zMy42MmMtMS4yNSwwLTIuMjQtMS0yLjI0LTIuMjRsLjc1LTQzLjgzdi0zNC44N2MwLTE1LjQ0LTUuOTgtMjIuOTEtMTYuNDQtMjIuOTFzLTIyLjY2LDEzLjctMjIuNjYsMzkuODV2MTcuOTNaIi8+CiAgICAgICAgPHBhdGggY2xhc3M9ImNscy0zIiBkPSJNNzI4LjM1LDE3NS45Yy00MS44NCwwLTY2LTI2LjE1LTY2LTY3czI0LjE2LTY3Ljc0LDY2LTY3Ljc0LDY1LjUsMjYuMTUsNjUuNSw2Ny0yMy42Niw2Ny43NC02NS41LDY3Ljc0Wk03MjguMzUsMTUwLjk5YzE4LjQzLDAsMjcuMTUtMTIuNywyNy4xNS00Mi4wOXMtOC45Ny00Mi44NC0yNy40LTQyLjg0Yy0xOC45My4yNS0yNy42NCwxNC4yLTI3LjY0LDQzLjA5czkuMjEsNDEuODQsMjcuODksNDEuODRaIi8+CiAgICAgICAgPHBhdGggY2xhc3M9ImNscy0zIiBkPSJNODU5Ljg1LDE3NS42NWMtMzcuMzYsMC02MS4yNy0xNS4xOS02Mi41MS00My44MywwLTEuMjQsMS0yLjI0LDIuMjQtMi4yNGgzMS44OGMxLjI1LDAsMi4yNCwxLDIuMjQsMi4yNCwxLDE0LjQ1LDEwLjQ2LDIwLjY3LDI3Ljg5LDIwLjY3LDE0LjY5LDAsMjIuNjYtNS43MywyMi42Ni0xNS42OSwwLTI0LjQxLTgzLjkzLS43NS04My45My01NC41NCwwLTI2LjY1LDIxLjQyLTQwLjg0LDU2LjA0LTQwLjg0czU2LjI5LDEzLjQ1LDU4LjUzLDQwLjM1Yy4yNSwxLjI1LS43NSwyLjI0LTEuOTksMi4yNGgtMzAuMzhjLTEuMjQsMC0yLjI0LTEtMi40OS0yLjI0LTEuOTktMTAuOTYtOC45Ny0xNy42OC0yNC4xNi0xNy42OC0xMi4yLDAtMTkuOTMsNC40OC0xOS45MywxNS40NCwwLDI0LjQxLDgzLjkzLS41LDgzLjkzLDU0LjA0LDAsMjYuOS0yNS40LDQyLjA5LTYwLjAyLDQyLjA5WiIvPgogICAgICAgIDxnPgogICAgICAgICAgPHJlY3QgY2xhc3M9ImNscy00IiB5PSIuMDciIHdpZHRoPSIxNzUuNzYiIGhlaWdodD0iMTc1Ljc2IiByeD0iMjguNDYiIHJ5PSIyOC40NiIvPgogICAgICAgICAgPGcgY2xhc3M9ImNscy01Ij4KICAgICAgICAgICAgPHBhdGggY2xhc3M9ImNscy0yIiBkPSJNMTY2Ljc3LDYuMjdsLTM2LjQ4LDIwNS4xOWMtNS4wOSwyOC42LTMyLjQsNDcuNjctNjEsNDIuNThsLTIyMi42OC0zOS41OSIvPgogICAgICAgICAgPC9nPgogICAgICAgIDwvZz4KICAgICAgPC9nPgogICAgPC9nPgogIDwvZz4KPC9zdmc+" alt="Lumos" class="logo-img"><span>© 2026 Lumos × LOI</span></div>
+</div>
+
+<!-- S4: EDIÇÃO -->
+<div class="slide" id="s4">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:5vw;align-items:center;height:100%;max-height:75vh;">
+    <div>
+      <div class="pill a1" style="margin-bottom:1.8rem;">Edição</div>
+      <h2 class="section a2" style="margin-bottom:1rem;">Conteúdo pronto<br><span class="yellow">toda semana.</span></h2>
+      <p class="body-lg a3" style="margin-bottom:1.5rem;">Time de edição dedicado, fluxo organizado e <b>revisões incluídas</b> para que cada vídeo saia exatamente como foi pensado.</p>
+      <div class="inc-list a4">
+        <div class="inc-item"><div class="inc-dot"></div><span class="inc-txt">Time de Edição Dedicado ao projeto</span></div>
+        <div class="inc-item"><div class="inc-dot"></div><span class="inc-txt">Gerente de Projetos dedicado</span></div>
+        <div class="inc-item"><div class="inc-dot"></div><span class="inc-txt">Controle de Qualidade</span></div>
+        <div class="inc-item"><div class="inc-dot"></div><span class="inc-txt">Revisões e ajustes incluídos</span></div>
+        <div class="inc-item"><div class="inc-dot"></div><span class="inc-txt">Reunião mensal de alinhamento</span></div>
+        <div class="inc-item"><div class="inc-dot"></div><span class="inc-txt">Canal direto via WhatsApp</span></div>
+      </div>
+    </div>
+    <div class="a3" style="display:flex;flex-direction:column;gap:1.2rem;">
+      <div class="card-y" style="border-radius:16px;padding:2rem;">
+        <div style="font-family:var(--ff-b);font-size:clamp(0.6rem,0.78vw,0.7rem);font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:rgba(239,199,0,0.7);margin-bottom:0.6rem;">O que está incluso</div>
+        <div style="font-family:var(--ff-d);font-weight:700;font-size:clamp(1rem,1.6vw,1.4rem);color:var(--txt);line-height:1.3;">Edição com cadência semanal — previsível e sem surpresas.</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.8rem;">
+        <div class="plan-box-hover" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:1.2rem 1rem;display:flex;flex-direction:column;gap:0.4rem;cursor:default;transition:background 0.2s,border-color 0.2s;">
+          <div style="font-family:var(--ff-d);font-weight:800;font-size:clamp(1.3rem,2vw,1.8rem);color:var(--txt);">P</div>
+          <div style="font-size:clamp(0.62rem,0.8vw,0.72rem);color:var(--txt2);">4 vídeos/mês</div>
+        </div>
+        <div class="plan-box-hover" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:1.2rem 1rem;display:flex;flex-direction:column;gap:0.4rem;cursor:default;transition:background 0.2s,border-color 0.2s;">
+          <div style="font-family:var(--ff-d);font-weight:800;font-size:clamp(1.3rem,2vw,1.8rem);color:var(--yellow);">M</div>
+          <div style="font-size:clamp(0.62rem,0.8vw,0.72rem);color:var(--txt2);">12 vídeos/mês</div>
+        </div>
+        <div class="plan-box-hover" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:1.2rem 1rem;display:flex;flex-direction:column;gap:0.4rem;cursor:default;transition:background 0.2s,border-color 0.2s;">
+          <div style="font-family:var(--ff-d);font-weight:800;font-size:clamp(1.3rem,2vw,1.8rem);color:var(--txt);">G</div>
+          <div style="font-size:clamp(0.62rem,0.8vw,0.72rem);color:var(--txt2);">20 vídeos/mês</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iTGF5ZXJfMiIgZGF0YS1uYW1lPSJMYXllciAyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIwIDAgOTE5Ljg3IDE3NS45Ij4KICA8ZGVmcz4KICAgIDxzdHlsZT4KICAgICAgLmNscy0xIHsKICAgICAgICBmaWxsOiBub25lOwogICAgICB9CgogICAgICAuY2xzLTIgewogICAgICAgIGZpbGw6IHVybCgjbGluZWFyLWdyYWRpZW50KTsKICAgICAgfQoKICAgICAgLmNscy0zIHsKICAgICAgICBmaWxsOiAjZmZmOwogICAgICB9CgogICAgICAuY2xzLTQgewogICAgICAgIGZpbGw6ICNlZmM3MDA7CiAgICAgIH0KCiAgICAgIC5jbHMtNSB7CiAgICAgICAgY2xpcC1wYXRoOiB1cmwoI2NsaXBwYXRoKTsKICAgICAgfQogICAgPC9zdHlsZT4KICAgIDxjbGlwUGF0aCBpZD0iY2xpcHBhdGgiPgogICAgICA8cmVjdCBjbGFzcz0iY2xzLTEiIHk9Ii4wNyIgd2lkdGg9IjE3NS43NiIgaGVpZ2h0PSIxNzUuNzYiIHJ4PSIyOC40NiIgcnk9IjI4LjQ2Ii8+CiAgICA8L2NsaXBQYXRoPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJsaW5lYXItZ3JhZGllbnQiIHgxPSItMTUzLjM5IiB5MT0iMTMwLjU3IiB4Mj0iMTY2Ljc3IiB5Mj0iMTMwLjU3IiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmZiIgc3RvcC1vcGFjaXR5PSIwIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2ZmZiIgc3RvcC1vcGFjaXR5PSIuOSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPGcgaWQ9IkxheWVyXzMiIGRhdGEtbmFtZT0iTGF5ZXIgMyI+CiAgICA8ZyBpZD0iTGF5ZXJfNSIgZGF0YS1uYW1lPSJMYXllciA1Ij4KICAgICAgPGc+CiAgICAgICAgPHBhdGggY2xhc3M9ImNscy0zIiBkPSJNMjQwLjgxLDE3NS4xN2MtMS4yNS44NC0yLjI0LS4xNi0yLjI0LTEuNGwxLjI1LTg0LjkzLTEuMjUtODYuNmMwLTEuMjUsMS0yLjI0LDIuMjQtMi4yNGgzNC4xMmMxLjI1LDAsMi4yNCwxLDIuMjQsMi4yNGwtMSw4NC4zNiwxLDYxLjI3aDEwMS43YzEuMjUsMCwyLjI0LDEsMi4yNCwyLjI0djIzLjY2YzAsMS4yNC0xLDIuMjQtMi4yNCwxLjRoLTEzOC4wNloiLz4KICAgICAgICA8cGF0aCBjbGFzcz0iY2xzLTMiIGQ9Ik0zNzYuMiwxNzUuNjVjLTI3LjE1LDAtNDQuODMtMTguNDMtNDQuODMtNDkuODF2LTI2LjlsLS41LTUyLjNjMC0xLjI1LDEtMi4yNCwyLjI0LTIuMjRoMzMuMzdjMS4yNSwwLDIuMjQsMSwyLjI0LDIuMjRsLS43NSw1Mi4zdjI2LjRjMCwxMy45NSw4LjQ3LDIyLjkxLDE5LjY4LDIyLjkxLDEzLjQ1LDAsMjcuODktMTIuNDUsMjcuODktMzkuODV2LTkuNDZsLS41LTUyLjNjMC0xLjI1LDEtMi4yNCwyLjI0LTIuMjRoMzMuODdjMS4yNSwwLDIuMjQsMSwyLjI0LDIuMjRsLS43NSw1OS4yNy4yNSw2NC41YzAsMS4yNC0xLDIuMjQtMi4yNCwyLjI0aC0zMS42M2MtMS4yNSwwLTIuMjQtMS0yLjI0LTIuMjRsLjc1LTEzLjk1Yy04LjcyLDExLjIxLTIzLjQxLDE5LjE4LTQxLjM0LDE5LjE4WiIvPgogICAgICAgIDxwYXRoIGNsYXNzPSJjbHMtMyIgZD0iTTUwMi43MSwxMjYuNTlsLjc1LDQzLjgzYzAsMS4yNC0xLDIuMjQtMi4yNCwyLjI0aC0zNC4xMmMtMS4yNSwwLTIuMjQtMS0yLjI0LTIuMjRsLjc1LTQzLjgzLS4yNS03OS45NWMwLTEuMjUsMS0yLjI0LDIuMjQtMi4yNGgzMS44OGMxLjI1LDAsMi4yNCwxLDIuMjQsMi4yNGwtLjc1LDEzLjk1YzguOTctMTIuNDUsMjAuNDItMTkuMTgsMzYuODYtMTkuMTgsMTcuOTMsMCwzMC42Myw3LjcyLDM2LjYxLDI0LjE2LDEwLjk2LTE5LjQzLDIzLjkxLTI0LjE2LDM5LjEtMjQuMTYsMjUuOSwwLDQwLjg0LDE1LjY5LDQwLjg0LDQ5LjgxdjM1LjM3bC41LDQzLjgzYzAsMS4yNC0xLDIuMjQtMi4yNCwyLjI0aC0zMy42MmMtMS4yNCwwLTIuMjQtMS0yLjI0LTIuMjRsLjc1LTQzLjgzdi0zNC44N2MwLTE1LjQ0LTYuMjMtMjIuOTEtMTYuNDQtMjIuOTFzLTIyLjY2LDEzLjctMjIuNjYsMzkuODV2MTcuOTNsLjc1LDQzLjgzYzAsMS4yNC0xLDIuMjQtMi4yNCwyLjI0aC0zMy42MmMtMS4yNSwwLTIuMjQtMS0yLjI0LTIuMjRsLjc1LTQzLjgzdi0zNC44N2MwLTE1LjQ0LTUuOTgtMjIuOTEtMTYuNDQtMjIuOTFzLTIyLjY2LDEzLjctMjIuNjYsMzkuODV2MTcuOTNaIi8+CiAgICAgICAgPHBhdGggY2xhc3M9ImNscy0zIiBkPSJNNzI4LjM1LDE3NS45Yy00MS44NCwwLTY2LTI2LjE1LTY2LTY3czI0LjE2LTY3Ljc0LDY2LTY3Ljc0LDY1LjUsMjYuMTUsNjUuNSw2Ny0yMy42Niw2Ny43NC02NS41LDY3Ljc0Wk03MjguMzUsMTUwLjk5YzE4LjQzLDAsMjcuMTUtMTIuNywyNy4xNS00Mi4wOXMtOC45Ny00Mi44NC0yNy40LTQyLjg0Yy0xOC45My4yNS0yNy42NCwxNC4yLTI3LjY0LDQzLjA5czkuMjEsNDEuODQsMjcuODksNDEuODRaIi8+CiAgICAgICAgPHBhdGggY2xhc3M9ImNscy0zIiBkPSJNODU5Ljg1LDE3NS42NWMtMzcuMzYsMC02MS4yNy0xNS4xOS02Mi41MS00My44MywwLTEuMjQsMS0yLjI0LDIuMjQtMi4yNGgzMS44OGMxLjI1LDAsMi4yNCwxLDIuMjQsMi4yNCwxLDE0LjQ1LDEwLjQ2LDIwLjY3LDI3Ljg5LDIwLjY3LDE0LjY5LDAsMjIuNjYtNS43MywyMi42Ni0xNS42OSwwLTI0LjQxLTgzLjkzLS43NS04My45My01NC41NCwwLTI2LjY1LDIxLjQyLTQwLjg0LDU2LjA0LTQwLjg0czU2LjI5LDEzLjQ1LDU4LjUzLDQwLjM1Yy4yNSwxLjI1LS43NSwyLjI0LTEuOTksMi4yNGgtMzAuMzhjLTEuMjQsMC0yLjI0LTEtMi40OS0yLjI0LTEuOTktMTAuOTYtOC45Ny0xNy42OC0yNC4xNi0xNy42OC0xMi4yLDAtMTkuOTMsNC40OC0xOS45MywxNS40NCwwLDI0LjQxLDgzLjkzLS41LDgzLjkzLDU0LjA0LDAsMjYuOS0yNS40LDQyLjA5LTYwLjAyLDQyLjA5WiIvPgogICAgICAgIDxnPgogICAgICAgICAgPHJlY3QgY2xhc3M9ImNscy00IiB5PSIuMDciIHdpZHRoPSIxNzUuNzYiIGhlaWdodD0iMTc1Ljc2IiByeD0iMjguNDYiIHJ5PSIyOC40NiIvPgogICAgICAgICAgPGcgY2xhc3M9ImNscy01Ij4KICAgICAgICAgICAgPHBhdGggY2xhc3M9ImNscy0yIiBkPSJNMTY2Ljc3LDYuMjdsLTM2LjQ4LDIwNS4xOWMtNS4wOSwyOC42LTMyLjQsNDcuNjctNjEsNDIuNThsLTIyMi42OC0zOS41OSIvPgogICAgICAgICAgPC9nPgogICAgICAgIDwvZz4KICAgICAgPC9nPgogICAgPC9nPgogIDwvZz4KPC9zdmc+" alt="Lumos" class="logo-img"><span>© 2026 Lumos × LOI</span></div>
+</div>
+
+<!-- S5: SEPARADO OU JUNTO -->
+<div class="slide" id="s5">
+  <div class="eyebrow a1" style="margin-bottom:0.5rem;">A escolha certa para a LOI</div>
+  <h2 class="section a2" style="margin-bottom:0.4rem;">Separado <span style="color:var(--txt2);font-weight:400;">ou</span> junto<span class="yellow">.</span></h2>
+  <p class="body-lg a3" style="margin-bottom:1.6rem;font-size:clamp(0.82rem,1.05vw,0.98rem);">Veja a diferença entre contratar os serviços individualmente ou os serviços combinados.</p>
+  <div class="a4" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.8vw;align-items:stretch;max-height:58vh;">
+
+    <!-- Box Captação -->
+    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:20px;padding:1.8rem 1.6rem;display:flex;flex-direction:column;gap:0.9rem;transition:border-color 0.2s,background 0.2s;cursor:default;" onmouseover="this.style.background='rgba(255,255,255,0.07)';this.style.borderColor='rgba(239,199,0,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.borderColor='rgba(255,255,255,0.09)'">
+      <div style="font-family:var(--ff-b);font-size:clamp(0.56rem,0.75vw,0.68rem);font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--txt2);">Captação</div>
+      <div style="font-family:var(--ff-d);font-weight:700;font-size:clamp(0.95rem,1.5vw,1.3rem);color:var(--txt);line-height:1.2;">Gravação profissional com time completo</div>
+      <div style="display:flex;flex-direction:column;gap:0.35rem;margin-top:auto;">
+        <div style="display:flex;justify-content:space-between;padding:0.4rem 0;border-bottom:1px solid rgba(255,255,255,0.05);"><span style="font-size:clamp(0.68rem,0.9vw,0.82rem);color:var(--txt2);">Plano P — 1 diária</span><span style="font-family:var(--ff-d);font-weight:700;color:var(--txt);font-size:clamp(0.78rem,1vw,0.92rem);">R$ 4.804</span></div>
+        <div style="display:flex;justify-content:space-between;padding:0.4rem 0;border-bottom:1px solid rgba(255,255,255,0.05);background:rgba(239,199,0,0.04);border-radius:4px;padding-inline:0.4rem;"><span style="font-size:clamp(0.68rem,0.9vw,0.82rem);color:var(--yellow);">Plano M — 3 diárias</span><span style="font-family:var(--ff-d);font-weight:700;color:var(--yellow);font-size:clamp(0.78rem,1vw,0.92rem);">R$ 8.624</span></div>
+        <div style="display:flex;justify-content:space-between;padding:0.4rem 0;"><span style="font-size:clamp(0.68rem,0.9vw,0.82rem);color:var(--txt2);">Plano G — 6 diárias</span><span style="font-family:var(--ff-d);font-weight:700;color:var(--txt);font-size:clamp(0.78rem,1vw,0.92rem);">R$ 11.603</span></div>
+      </div>
+    </div>
+
+    <!-- Box Edição -->
+    <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:20px;padding:1.8rem 1.6rem;display:flex;flex-direction:column;gap:0.9rem;transition:border-color 0.2s,background 0.2s;cursor:default;" onmouseover="this.style.background='rgba(255,255,255,0.07)';this.style.borderColor='rgba(239,199,0,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.borderColor='rgba(255,255,255,0.09)'">
+      <div style="font-family:var(--ff-b);font-size:clamp(0.56rem,0.75vw,0.68rem);font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--txt2);">Edição</div>
+      <div style="font-family:var(--ff-d);font-weight:700;font-size:clamp(0.95rem,1.5vw,1.3rem);color:var(--txt);line-height:1.2;">Time de edição dedicado, entrega semanal</div>
+      <div style="display:flex;flex-direction:column;gap:0.35rem;margin-top:auto;">
+        <div style="display:flex;justify-content:space-between;padding:0.4rem 0;border-bottom:1px solid rgba(255,255,255,0.05);"><span style="font-size:clamp(0.68rem,0.9vw,0.82rem);color:var(--txt2);">Plano P — 4 vídeos</span><span style="font-family:var(--ff-d);font-weight:700;color:var(--txt);font-size:clamp(0.78rem,1vw,0.92rem);">R$ 6.428</span></div>
+        <div style="display:flex;justify-content:space-between;padding:0.4rem 0;border-bottom:1px solid rgba(255,255,255,0.05);background:rgba(239,199,0,0.04);border-radius:4px;padding-inline:0.4rem;"><span style="font-size:clamp(0.68rem,0.9vw,0.82rem);color:var(--yellow);">Plano M — 12 vídeos</span><span style="font-family:var(--ff-d);font-weight:700;color:var(--yellow);font-size:clamp(0.78rem,1vw,0.92rem);">R$ 9.408</span></div>
+        <div style="display:flex;justify-content:space-between;padding:0.4rem 0;"><span style="font-size:clamp(0.68rem,0.9vw,0.82rem);color:var(--txt2);">Plano G — 20 vídeos</span><span style="font-family:var(--ff-d);font-weight:700;color:var(--txt);font-size:clamp(0.78rem,1vw,0.92rem);">R$ 13.171</span></div>
+      </div>
+    </div>
+
+    <!-- Box Pacote Lumos (amarelo) -->
+    <div style="background:var(--yellow);border:2px solid var(--yellow);border-radius:20px;padding:1.8rem 1.6rem;display:flex;flex-direction:column;gap:0.9rem;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:-10px;right:-10px;width:90px;height:90px;background:rgba(0,0,0,0.07);border-radius:50%;pointer-events:none;"></div>
+      <div style="font-family:var(--ff-b);font-size:clamp(0.56rem,0.75vw,0.68rem);font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:rgba(28,27,26,0.6);">Pacote Captação + Edição</div>
+      <div style="font-family:var(--ff-d);font-weight:800;font-size:clamp(1.1rem,1.8vw,1.6rem);color:#1c1b1a;line-height:1.15;margin-top:0.3rem;">Um único contrato.<br>Dois serviços integrados.</div>
+      <div style="width:2rem;height:2px;background:rgba(28,27,26,0.2);border-radius:2px;margin-top:0.8rem;"></div>
+      <div style="margin-top:0.8rem;display:flex;flex-direction:column;gap:0.5rem;">
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+          <div style="width:6px;height:6px;background:#1c1b1a;border-radius:50%;opacity:0.4;flex-shrink:0;"></div>
+          <span style="font-family:var(--ff-b);font-size:clamp(0.72rem,0.95vw,0.88rem);color:#1c1b1a;line-height:1.4;">Um fluxo. Uma única gestão.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iTGF5ZXJfMiIgZGF0YS1uYW1lPSJMYXllciAyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIwIDAgOTE5Ljg3IDE3NS45Ij4KICA8ZGVmcz4KICAgIDxzdHlsZT4KICAgICAgLmNscy0xIHsKICAgICAgICBmaWxsOiBub25lOwogICAgICB9CgogICAgICAuY2xzLTIgewogICAgICAgIGZpbGw6IHVybCgjbGluZWFyLWdyYWRpZW50KTsKICAgICAgfQoKICAgICAgLmNscy0zIHsKICAgICAgICBmaWxsOiAjZmZmOwogICAgICB9CgogICAgICAuY2xzLTQgewogICAgICAgIGZpbGw6ICNlZmM3MDA7CiAgICAgIH0KCiAgICAgIC5jbHMtNSB7CiAgICAgICAgY2xpcC1wYXRoOiB1cmwoI2NsaXBwYXRoKTsKICAgICAgfQogICAgPC9zdHlsZT4KICAgIDxjbGlwUGF0aCBpZD0iY2xpcHBhdGgiPgogICAgICA8cmVjdCBjbGFzcz0iY2xzLTEiIHk9Ii4wNyIgd2lkdGg9IjE3NS43NiIgaGVpZ2h0PSIxNzUuNzYiIHJ4PSIyOC40NiIgcnk9IjI4LjQ2Ii8+CiAgICA8L2NsaXBQYXRoPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJsaW5lYXItZ3JhZGllbnQiIHgxPSItMTUzLjM5IiB5MT0iMTMwLjU3IiB4Mj0iMTY2Ljc3IiB5Mj0iMTMwLjU3IiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmZiIgc3RvcC1vcGFjaXR5PSIwIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2ZmZiIgc3RvcC1vcGFjaXR5PSIuOSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPGcgaWQ9IkxheWVyXzMiIGRhdGEtbmFtZT0iTGF5ZXIgMyI+CiAgICA8ZyBpZD0iTGF5ZXJfNSIgZGF0YS1uYW1lPSJMYXllciA1Ij4KICAgICAgPGc+CiAgICAgICAgPHBhdGggY2xhc3M9ImNscy0zIiBkPSJNMjQwLjgxLDE3NS4xN2MtMS4yNS44NC0yLjI0LS4xNi0yLjI0LTEuNGwxLjI1LTg0LjkzLTEuMjUtODYuNmMwLTEuMjUsMS0yLjI0LDIuMjQtMi4yNGgzNC4xMmMxLjI1LDAsMi4yNCwxLDIuMjQsMi4yNGwtMSw4NC4zNiwxLDYxLjI3aDEwMS43YzEuMjUsMCwyLjI0LDEsMi4yNCwyLjI0djIzLjY2YzAsMS4yNC0xLDIuMjQtMi4yNCwxLjRoLTEzOC4wNloiLz4KICAgICAgICA8cGF0aCBjbGFzcz0iY2xzLTMiIGQ9Ik0zNzYuMiwxNzUuNjVjLTI3LjE1LDAtNDQuODMtMTguNDMtNDQuODMtNDkuODF2LTI2LjlsLS41LTUyLjNjMC0xLjI1LDEtMi4yNCwyLjI0LTIuMjRoMzMuMzdjMS4yNSwwLDIuMjQsMSwyLjI0LDIuMjRsLS43NSw1Mi4zdjI2LjRjMCwxMy45NSw4LjQ3LDIyLjkxLDE5LjY4LDIyLjkxLDEzLjQ1LDAsMjcuODktMTIuNDUsMjcuODktMzkuODV2LTkuNDZsLS41LTUyLjNjMC0xLjI1LDEtMi4yNCwyLjI0LTIuMjRoMzMuODdjMS4yNSwwLDIuMjQsMSwyLjI0LDIuMjRsLS43NSw1OS4yNy4yNSw2NC41YzAsMS4yNC0xLDIuMjQtMi4yNCwyLjI0aC0zMS42M2MtMS4yNSwwLTIuMjQtMS0yLjI0LTIuMjRsLjc1LTEzLjk1Yy04LjcyLDExLjIxLTIzLjQxLDE5LjE4LTQxLjM0LDE5LjE4WiIvPgogICAgICAgIDxwYXRoIGNsYXNzPSJjbHMtMyIgZD0iTTUwMi43MSwxMjYuNTlsLjc1LDQzLjgzYzAsMS4yNC0xLDIuMjQtMi4yNCwyLjI0aC0zNC4xMmMtMS4yNSwwLTIuMjQtMS0yLjI0LTIuMjRsLjc1LTQzLjgzLS4yNS03OS45NWMwLTEuMjUsMS0yLjI0LDIuMjQtMi4yNGgzMS44OGMxLjI1LDAsMi4yNCwxLDIuMjQsMi4yNGwtLjc1LDEzLjk1YzguOTctMTIuNDUsMjAuNDItMTkuMTgsMzYuODYtMTkuMTgsMTcuOTMsMCwzMC42Myw3LjcyLDM2LjYxLDI0LjE2LDEwLjk2LTE5LjQzLDIzLjkxLTI0LjE2LDM5LjEtMjQuMTYsMjUuOSwwLDQwLjg0LDE1LjY5LDQwLjg0LDQ5LjgxdjM1LjM3bC41LDQzLjgzYzAsMS4yNC0xLDIuMjQtMi4yNCwyLjI0aC0zMy42MmMtMS4yNCwwLTIuMjQtMS0yLjI0LTIuMjRsLjc1LTQzLjgzdi0zNC44N2MwLTE1LjQ0LTYuMjMtMjIuOTEtMTYuNDQtMjIuOTFzLTIyLjY2LDEzLjctMjIuNjYsMzkuODV2MTcuOTNsLjc1LDQzLjgzYzAsMS4yNC0xLDIuMjQtMi4yNCwyLjI0aC0zMy42MmMtMS4yNSwwLTIuMjQtMS0yLjI0LTIuMjRsLjc1LTQzLjgzdi0zNC44N2MwLTE1LjQ0LTUuOTgtMjIuOTEtMTYuNDQtMjIuOTFzLTIyLjY2LDEzLjctMjIuNjYsMzkuODV2MTcuOTNaIi8+CiAgICAgICAgPHBhdGggY2xhc3M9ImNscy0zIiBkPSJNNzI4LjM1LDE3NS45Yy00MS44NCwwLTY2LTI2LjE1LTY2LTY3czI0LjE2LTY3Ljc0LDY2LTY3Ljc0LDY1LjUsMjYuMTUsNjUuNSw2Ny0yMy42Niw2Ny43NC02NS41LDY3Ljc0Wk03MjguMzUsMTUwLjk5YzE4LjQzLDAsMjcuMTUtMTIuNywyNy4xNS00Mi4wOXMtOC45Ny00Mi44NC0yNy40LTQyLjg0Yy0xOC45My4yNS0yNy42NCwxNC4yLTI3LjY0LDQzLjA5czkuMjEsNDEuODQsMjcuODksNDEuODRaIi8+CiAgICAgICAgPHBhdGggY2xhc3M9ImNscy0zIiBkPSJNODU5Ljg1LDE3NS42NWMtMzcuMzYsMC02MS4yNy0xNS4xOS02Mi41MS00My44MywwLTEuMjQsMS0yLjI0LDIuMjQtMi4yNGgzMS44OGMxLjI1LDAsMi4yNCwxLDIuMjQsMi4yNCwxLDE0LjQ1LDEwLjQ2LDIwLjY3LDI3Ljg5LDIwLjY3LDE0LjY5LDAsMjIuNjYtNS43MywyMi42Ni0xNS42OSwwLTI0LjQxLTgzLjkzLS43NS04My45My01NC41NCwwLTI2LjY1LDIxLjQyLTQwLjg0LDU2LjA0LTQwLjg0czU2LjI5LDEzLjQ1LDU4LjUzLDQwLjM1Yy4yNSwxLjI1LS43NSwyLjI0LTEuOTksMi4yNGgtMzAuMzhjLTEuMjQsMC0yLjI0LTEtMi40OS0yLjI0LTEuOTktMTAuOTYtOC45Ny0xNy42OC0yNC4xNi0xNy42OC0xMi4yLDAtMTkuOTMsNC40OC0xOS45MywxNS40NCwwLDI0LjQxLDgzLjkzLS41LDgzLjkzLDU0LjA0LDAsMjYuOS0yNS40LDQyLjA5LTYwLjAyLDQyLjA5WiIvPgogICAgICAgIDxnPgogICAgICAgICAgPHJlY3QgY2xhc3M9ImNscy00IiB5PSIuMDciIHdpZHRoPSIxNzUuNzYiIGhlaWdodD0iMTc1Ljc2IiByeD0iMjguNDYiIHJ5PSIyOC40NiIvPgogICAgICAgICAgPGcgY2xhc3M9ImNscy01Ij4KICAgICAgICAgICAgPHBhdGggY2xhc3M9ImNscy0yIiBkPSJNMTY2Ljc3LDYuMjdsLTM2LjQ4LDIwNS4xOWMtNS4wOSwyOC42LTMyLjQsNDcuNjctNjEsNDIuNThsLTIyMi42OC0zOS41OSIvPgogICAgICAgICAgPC9nPgogICAgICAgIDwvZz4KICAgICAgPC9nPgogICAgPC9nPgogIDwvZz4KPC9zdmc+" alt="Lumos" class="logo-img"><span>© 2026 Lumos × LOI</span></div>
+</div>
+
+<!-- S6: TABELA CAPTAÇÃO + EDIÇÃO POR MÊS -->
+<div class="slide" id="s6">
+  <h2 class="section a2" style="margin-bottom:0.5rem;font-size:clamp(1.6rem,3.5vw,3.5rem);">Captação <span class="yellow">+</span> Edição<br><span style="font-size:0.55em;font-weight:400;color:var(--txt2);letter-spacing:0;font-family:var(--ff-b);">por mês</span></h2>
+  <p class="body-lg a3" style="margin-bottom:1.4rem;font-size:clamp(0.8rem,1vw,0.95rem);">Escolha a combinação certa para o volume de conteúdo da LOI.</p>
+  <div class="ctable-wrap a4">
+    <table class="ctable">
+      <thead>
+        <tr>
+          <th style="text-align:left;">Captação \ Edição</th>
+          <th>4 vídeos</th>
+          <th>12 vídeos</th>
+          <th>20 vídeos</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1 diária</td>
+          <td>R$ 6.890</td>
+          <td>R$ 9.890</td>
+          <td>R$ 12.890</td>
+        </tr>
+        <tr class="row-hl">
+          <td>3 diárias</td>
+          <td>R$ 10.890</td>
+          <td class="best">R$ 13.890 ✦</td>
+          <td>R$ 16.890</td>
+        </tr>
+        <tr>
+          <td>6 diárias</td>
+          <td>R$ 13.890</td>
+          <td>R$ 17.890</td>
+          <td>R$ 21.890</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="a5" style="margin-top:1rem;">
+    <div class="bstrip">
+      <div class="bstrip-icon">💬</div>
+      <div class="bstrip-text">Precisa de outra combinação? <b>A gente monta sob medida.</b></div>
+    </div>
+  </div>
+  <div class="foot"><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iTGF5ZXJfMiIgZGF0YS1uYW1lPSJMYXllciAyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIwIDAgOTE5Ljg3IDE3NS45Ij4KICA8ZGVmcz4KICAgIDxzdHlsZT4KICAgICAgLmNscy0xIHsKICAgICAgICBmaWxsOiBub25lOwogICAgICB9CgogICAgICAuY2xzLTIgewogICAgICAgIGZpbGw6IHVybCgjbGluZWFyLWdyYWRpZW50KTsKICAgICAgfQoKICAgICAgLmNscy0zIHsKICAgICAgICBmaWxsOiAjZmZmOwogICAgICB9CgogICAgICAuY2xzLTQgewogICAgICAgIGZpbGw6ICNlZmM3MDA7CiAgICAgIH0KCiAgICAgIC5jbHMtNSB7CiAgICAgICAgY2xpcC1wYXRoOiB1cmwoI2NsaXBwYXRoKTsKICAgICAgfQogICAgPC9zdHlsZT4KICAgIDxjbGlwUGF0aCBpZD0iY2xpcHBhdGgiPgogICAgICA8cmVjdCBjbGFzcz0iY2xzLTEiIHk9Ii4wNyIgd2lkdGg9IjE3NS43NiIgaGVpZ2h0PSIxNzUuNzYiIHJ4PSIyOC40NiIgcnk9IjI4LjQ2Ii8+CiAgICA8L2NsaXBQYXRoPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJsaW5lYXItZ3JhZGllbnQiIHgxPSItMTUzLjM5IiB5MT0iMTMwLjU3IiB4Mj0iMTY2Ljc3IiB5Mj0iMTMwLjU3IiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmZiIgc3RvcC1vcGFjaXR5PSIwIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2ZmZiIgc3RvcC1vcGFjaXR5PSIuOSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPGcgaWQ9IkxheWVyXzMiIGRhdGEtbmFtZT0iTGF5ZXIgMyI+CiAgICA8ZyBpZD0iTGF5ZXJfNSIgZGF0YS1uYW1lPSJMYXllciA1Ij4KICAgICAgPGc+CiAgICAgICAgPHBhdGggY2xhc3M9ImNscy0zIiBkPSJNMjQwLjgxLDE3NS4xN2MtMS4yNS44NC0yLjI0LS4xNi0yLjI0LTEuNGwxLjI1LTg0LjkzLTEuMjUtODYuNmMwLTEuMjUsMS0yLjI0LDIuMjQtMi4yNGgzNC4xMmMxLjI1LDAsMi4yNCwxLDIuMjQsMi4yNGwtMSw4NC4zNiwxLDYxLjI3aDEwMS43YzEuMjUsMCwyLjI0LDEsMi4yNCwyLjI0djIzLjY2YzAsMS4yNC0xLDIuMjQtMi4yNCwxLjRoLTEzOC4wNloiLz4KICAgICAgICA8cGF0aCBjbGFzcz0iY2xzLTMiIGQ9Ik0zNzYuMiwxNzUuNjVjLTI3LjE1LDAtNDQuODMtMTguNDMtNDQuODMtNDkuODF2LTI2LjlsLS41LTUyLjNjMC0xLjI1LDEtMi4yNCwyLjI0LTIuMjRoMzMuMzdjMS4yNSwwLDIuMjQsMSwyLjI0LDIuMjRsLS43NSw1Mi4zdjI2LjRjMCwxMy45NSw4LjQ3LDIyLjkxLDE5LjY4LDIyLjkxLDEzLjQ1LDAsMjcuODktMTIuNDUsMjcuODktMzkuODV2LTkuNDZsLS41LTUyLjNjMC0xLjI1LDEtMi4yNCwyLjI0LTIuMjRoMzMuODdjMS4yNSwwLDIuMjQsMSwyLjI0LDIuMjRsLS43NSw1OS4yNy4yNSw2NC41YzAsMS4yNC0xLDIuMjQtMi4yNCwyLjI0aC0zMS42M2MtMS4yNSwwLTIuMjQtMS0yLjI0LTIuMjRsLjc1LTEzLjk1Yy04LjcyLDExLjIxLTIzLjQxLDE5LjE4LTQxLjM0LDE5LjE4WiIvPgogICAgICAgIDxwYXRoIGNsYXNzPSJjbHMtMyIgZD0iTTUwMi43MSwxMjYuNTlsLjc1LDQzLjgzYzAsMS4yNC0xLDIuMjQtMi4yNCwyLjI0aC0zNC4xMmMtMS4yNSwwLTIuMjQtMS0yLjI0LTIuMjRsLjc1LTQzLjgzLS4yNS03OS45NWMwLTEuMjUsMS0yLjI0LDIuMjQtMi4yNGgzMS44OGMxLjI1LDAsMi4yNCwxLDIuMjQsMi4yNGwtLjc1LDEzLjk1YzguOTctMTIuNDUsMjAuNDItMTkuMTgsMzYuODYtMTkuMTgsMTcuOTMsMCwzMC42Myw3LjcyLDM2LjYxLDI0LjE2LDEwLjk2LTE5LjQzLDIzLjkxLTI0LjE2LDM5LjEtMjQuMTYsMjUuOSwwLDQwLjg0LDE1LjY5LDQwLjg0LDQ5LjgxdjM1LjM3bC41LDQzLjgzYzAsMS4yNC0xLDIuMjQtMi4yNCwyLjI0aC0zMy42MmMtMS4yNCwwLTIuMjQtMS0yLjI0LTIuMjRsLjc1LTQzLjgzdi0zNC44N2MwLTE1LjQ0LTYuMjMtMjIuOTEtMTYuNDQtMjIuOTFzLTIyLjY2LDEzLjctMjIuNjYsMzkuODV2MTcuOTNsLjc1LDQzLjgzYzAsMS4yNC0xLDIuMjQtMi4yNCwyLjI0aC0zMy42MmMtMS4yNSwwLTIuMjQtMS0yLjI0LTIuMjRsLjc1LTQzLjgzdi0zNC44N2MwLTE1LjQ0LTUuOTgtMjIuOTEtMTYuNDQtMjIuOTFzLTIyLjY2LDEzLjctMjIuNjYsMzkuODV2MTcuOTNaIi8+CiAgICAgICAgPHBhdGggY2xhc3M9ImNscy0zIiBkPSJNNzI4LjM1LDE3NS45Yy00MS44NCwwLTY2LTI2LjE1LTY2LTY3czI0LjE2LTY3Ljc0LDY2LTY3Ljc0LDY1LjUsMjYuMTUsNjUuNSw2Ny0yMy42Niw2Ny43NC02NS41LDY3Ljc0Wk03MjguMzUsMTUwLjk5YzE4LjQzLDAsMjcuMTUtMTIuNywyNy4xNS00Mi4wOXMtOC45Ny00Mi44NC0yNy40LTQyLjg0Yy0xOC45My4yNS0yNy42NCwxNC4yLTI3LjY0LDQzLjA5czkuMjEsNDEuODQsMjcuODksNDEuODRaIi8+CiAgICAgICAgPHBhdGggY2xhc3M9ImNscy0zIiBkPSJNODU5Ljg1LDE3NS42NWMtMzcuMzYsMC02MS4yNy0xNS4xOS02Mi41MS00My44MywwLTEuMjQsMS0yLjI0LDIuMjQtMi4yNGgzMS44OGMxLjI1LDAsMi4yNCwxLDIuMjQsMi4yNCwxLDE0LjQ1LDEwLjQ2LDIwLjY3LDI3Ljg5LDIwLjY3LDE0LjY5LDAsMjIuNjYtNS43MywyMi42Ni0xNS42OSwwLTI0LjQxLTgzLjkzLS43NS04My45My01NC41NCwwLTI2LjY1LDIxLjQyLTQwLjg0LDU2LjA0LTQwLjg0czU2LjI5LDEzLjQ1LDU4LjUzLDQwLjM1Yy4yNSwxLjI1LS43NSwyLjI0LTEuOTksMi4yNGgtMzAuMzhjLTEuMjQsMC0yLjI0LTEtMi40OS0yLjI0LTEuOTktMTAuOTYtOC45Ny0xNy42OC0yNC4xNi0xNy42OC0xMi4yLDAtMTkuOTMsNC40OC0xOS45MywxNS40NCwwLDI0LjQxLDgzLjkzLS41LDgzLjkzLDU0LjA0LDAsMjYuOS0yNS40LDQyLjA5LTYwLjAyLDQyLjA5WiIvPgogICAgICAgIDxnPgogICAgICAgICAgPHJlY3QgY2xhc3M9ImNscy00IiB5PSIuMDciIHdpZHRoPSIxNzUuNzYiIGhlaWdodD0iMTc1Ljc2IiByeD0iMjguNDYiIHJ5PSIyOC40NiIvPgogICAgICAgICAgPGcgY2xhc3M9ImNscy01Ij4KICAgICAgICAgICAgPHBhdGggY2xhc3M9ImNscy0yIiBkPSJNMTY2Ljc3LDYuMjdsLTM2LjQ4LDIwNS4xOWMtNS4wOSwyOC42LTMyLjQsNDcuNjctNjEsNDIuNThsLTIyMi42OC0zOS41OSIvPgogICAgICAgICAgPC9nPgogICAgICAgIDwvZz4KICAgICAgPC9nPgogICAgPC9nPgogIDwvZz4KPC9zdmc+" alt="Lumos" class="logo-img"><span>© 2026 Lumos × LOI</span></div>
+</div>
+
+<!-- S7: FECHAMENTO -->
+<div class="slide" id="s7" style="flex-direction:row;align-items:center;gap:4vw;padding-right:4vw;">
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;">
+    <div class="eyebrow a1">Próximos passos</div>
+    <h2 class="section a2" style="font-size:clamp(2rem,4.5vw,4.8rem);margin-bottom:1rem;">Bora criar<br>conteúdo que<br><span class="yellow hl">converte?</span></h2>
+    <p class="body-lg a3" style="margin-top:0.5rem;max-width:42ch;">Defina o volume ideal, ajuste o formato e a gente <b>inicia a operação.</b> A Lumos cuida do resto.</p>
+    <div class="a4" style="display:flex;flex-direction:column;gap:0.6rem;margin-top:1.6rem;">
+      <div style="display:flex;align-items:center;gap:0.8rem;">
+        <div style="width:1.6rem;height:1.6rem;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span style="font-family:var(--ff-d);font-weight:800;font-size:0.7rem;color:#1c1b1a;">1</span></div>
+        <span style="font-size:clamp(0.82rem,1.1vw,1rem);color:var(--txt2);">Definir volume ideal de captação e edição</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.8rem;">
+        <div style="width:1.6rem;height:1.6rem;border-radius:50%;background:rgba(239,199,0,0.15);border:1.5px solid rgba(239,199,0,0.4);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span style="font-family:var(--ff-d);font-weight:800;font-size:0.7rem;color:var(--yellow);">2</span></div>
+        <span style="font-size:clamp(0.82rem,1.1vw,1rem);color:var(--txt2);">Ajustar o pacote para o ritmo da LOI</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.8rem;">
+        <div style="width:1.6rem;height:1.6rem;border-radius:50%;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><span style="font-family:var(--ff-d);font-weight:800;font-size:0.7rem;color:var(--txt2);">3</span></div>
+        <span style="font-size:clamp(0.82rem,1.1vw,1rem);color:var(--txt2);">Iniciar operação e acompanhar de perto</span>
+      </div>
+    </div>
+    <div class="a5" style="margin-top:2rem;">
+      <span style="font-family:var(--ff-b);font-size:clamp(0.6rem,0.8vw,0.72rem);font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);">Site</span>
+      <div style="margin-top:0.3rem;"><a href="https://www.produtoralumos.com.br" target="_blank" style="font-family:var(--ff-b);font-size:clamp(0.85rem,1.1vw,1rem);color:var(--yellow);font-weight:500;text-decoration:none;">www.produtoralumos.com.br</a></div>
+    </div>
+  </div>
+  <div class="a3" style="flex:0 0 40%;display:flex;flex-direction:column;gap:1rem;justify-content:center;">
+    <div style="background:rgba(239,199,0,0.07);border:1px solid rgba(239,199,0,0.2);border-radius:16px;padding:0.6rem;overflow:hidden;">
+      <div style="font-family:var(--ff-b);font-size:clamp(0.6rem,0.78vw,0.7rem);font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:rgba(239,199,0,0.7);padding:0.8rem 1rem 0.6rem;">Lumos em ação</div>
+      <div style="position:relative;width:100%;padding-top:56.25%;border-radius:10px;overflow:hidden;background:#000;">
+        <iframe id="yt-frame" src="about:blank" style="position:absolute;inset:0;width:100%;height:100%;border:none;" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:1rem;padding:1rem 1.2rem;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);">
+      <div style="background:#fff;border-radius:8px;padding:0.3rem 0.5rem;display:flex;align-items:center;flex-shrink:0;">
+        <img src="data:image/png;base64,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" alt="LOI" style="height:1.6rem;width:auto;">
+      </div>
+      <span style="font-family:var(--ff-b);font-size:clamp(0.72rem,0.95vw,0.88rem);color:var(--txt2);">Proposta exclusiva <b style="color:var(--txt);">para a LOI</b> — 2026</span>
+    </div>
+  </div>
+  <div class="foot"><img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iTGF5ZXJfMiIgZGF0YS1uYW1lPSJMYXllciAyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2aWV3Qm94PSIwIDAgOTE5Ljg3IDE3NS45Ij4KICA8ZGVmcz4KICAgIDxzdHlsZT4KICAgICAgLmNscy0xIHsKICAgICAgICBmaWxsOiBub25lOwogICAgICB9CgogICAgICAuY2xzLTIgewogICAgICAgIGZpbGw6IHVybCgjbGluZWFyLWdyYWRpZW50KTsKICAgICAgfQoKICAgICAgLmNscy0zIHsKICAgICAgICBmaWxsOiAjZmZmOwogICAgICB9CgogICAgICAuY2xzLTQgewogICAgICAgIGZpbGw6ICNlZmM3MDA7CiAgICAgIH0KCiAgICAgIC5jbHMtNSB7CiAgICAgICAgY2xpcC1wYXRoOiB1cmwoI2NsaXBwYXRoKTsKICAgICAgfQogICAgPC9zdHlsZT4KICAgIDxjbGlwUGF0aCBpZD0iY2xpcHBhdGgiPgogICAgICA8cmVjdCBjbGFzcz0iY2xzLTEiIHk9Ii4wNyIgd2lkdGg9IjE3NS43NiIgaGVpZ2h0PSIxNzUuNzYiIHJ4PSIyOC40NiIgcnk9IjI4LjQ2Ii8+CiAgICA8L2NsaXBQYXRoPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJsaW5lYXItZ3JhZGllbnQiIHgxPSItMTUzLjM5IiB5MT0iMTMwLjU3IiB4Mj0iMTY2Ljc3IiB5Mj0iMTMwLjU3IiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2ZmZiIgc3RvcC1vcGFjaXR5PSIwIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2ZmZiIgc3RvcC1vcGFjaXR5PSIuOSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPGcgaWQ9IkxheWVyXzMiIGRhdGEtbmFtZT0iTGF5ZXIgMyI+CiAgICA8ZyBpZD0iTGF5ZXJfNSIgZGF0YS1uYW1lPSJMYXllciA1Ij4KICAgICAgPGc+CiAgICAgICAgPHBhdGggY2xhc3M9ImNscy0zIiBkPSJNMjQwLjgxLDE3NS4xN2MtMS4yNS44NC0yLjI0LS4xNi0yLjI0LTEuNGwxLjI1LTg0LjkzLTEuMjUtODYuNmMwLTEuMjUsMS0yLjI0LDIuMjQtMi4yNGgzNC4xMmMxLjI1LDAsMi4yNCwxLDIuMjQsMi4yNGwtMSw4NC4zNiwxLDYxLjI3aDEwMS43YzEuMjUsMCwyLjI0LDEsMi4yNCwyLjI0djIzLjY2YzAsMS4yNC0xLDIuMjQtMi4yNCwxLjRoLTEzOC4wNloiLz4KICAgICAgICA8cGF0aCBjbGFzcz0iY2xzLTMiIGQ9Ik0zNzYuMiwxNzUuNjVjLTI3LjE1LDAtNDQuODMtMTguNDMtNDQuODMtNDkuODF2LTI2LjlsLS41LTUyLjNjMC0xLjI1LDEtMi4yNCwyLjI0LTIuMjRoMzMuMzdjMS4yNSwwLDIuMjQsMSwyLjI0LDIuMjRsLS43NSw1Mi4zdjI2LjRjMCwxMy45NSw4LjQ3LDIyLjkxLDE5LjY4LDIyLjkxLDEzLjQ1LDAsMjcuODktMTIuNDUsMjcuODktMzkuODV2LTkuNDZsLS41LTUyLjNjMC0xLjI1LDEtMi4yNCwyLjI0LTIuMjRoMzMuODdjMS4yNSwwLDIuMjQsMSwyLjI0LDIuMjRsLS43NSw1OS4yNy4yNSw2NC41YzAsMS4yNC0xLDIuMjQtMi4yNCwyLjI0aC0zMS42M2MtMS4yNSwwLTIuMjQtMS0yLjI0LTIuMjRsLjc1LTEzLjk1Yy04LjcyLDExLjIxLTIzLjQxLDE5LjE4LTQxLjM0LDE5LjE4WiIvPgogICAgICAgIDxwYXRoIGNsYXNzPSJjbHMtMyIgZD0iTTUwMi43MSwxMjYuNTlsLjc1LDQzLjgzYzAsMS4yNC0xLDIuMjQtMi4yNCwyLjI0aC0zNC4xMmMtMS4yNSwwLTIuMjQtMS0yLjI0LTIuMjRsLjc1LTQzLjgzLS4yNS03OS45NWMwLTEuMjUsMS0yLjI0LDIuMjQtMi4yNGgzMS44OGMxLjI1LDAsMi4yNCwxLDIuMjQsMi4yNGwtLjc1LDEzLjk1YzguOTctMTIuNDUsMjAuNDItMTkuMTgsMzYuODYtMTkuMTgsMTcuOTMsMCwzMC42Myw3LjcyLDM2LjYxLDI0LjE2LDEwLjk2LTE5LjQzLDIzLjkxLTI0LjE2LDM5LjEtMjQuMTYsMjUuOSwwLDQwLjg0LDE1LjY5LDQwLjg0LDQ5LjgxdjM1LjM3bC41LDQzLjgzYzAsMS4yNC0xLDIuMjQtMi4yNCwyLjI0aC0zMy42MmMtMS4yNCwwLTIuMjQtMS0yLjI0LTIuMjRsLjc1LTQzLjgzdi0zNC44N2MwLTE1LjQ0LTYuMjMtMjIuOTEtMTYuNDQtMjIuOTFzLTIyLjY2LDEzLjctMjIuNjYsMzkuODV2MTcuOTNsLjc1LDQzLjgzYzAsMS4yNC0xLDIuMjQtMi4yNCwyLjI0aC0zMy42MmMtMS4yNSwwLTIuMjQtMS0yLjI0LTIuMjRsLjc1LTQzLjgzdi0zNC44N2MwLTE1LjQ0LTUuOTgtMjIuOTEtMTYuNDQtMjIuOTFzLTIyLjY2LDEzLjctMjIuNjYsMzkuODV2MTcuOTNaIi8+CiAgICAgICAgPHBhdGggY2xhc3M9ImNscy0zIiBkPSJNNzI4LjM1LDE3NS45Yy00MS44NCwwLTY2LTI2LjE1LTY2LTY3czI0LjE2LTY3Ljc0LDY2LTY3Ljc0LDY1LjUsMjYuMTUsNjUuNSw2Ny0yMy42Niw2Ny43NC02NS41LDY3Ljc0Wk03MjguMzUsMTUwLjk5YzE4LjQzLDAsMjcuMTUtMTIuNywyNy4xNS00Mi4wOXMtOC45Ny00Mi44NC0yNy40LTQyLjg0Yy0xOC45My4yNS0yNy42NCwxNC4yLTI3LjY0LDQzLjA5czkuMjEsNDEuODQsMjcuODksNDEuODRaIi8+CiAgICAgICAgPHBhdGggY2xhc3M9ImNscy0zIiBkPSJNODU5Ljg1LDE3NS42NWMtMzcuMzYsMC02MS4yNy0xNS4xOS02Mi41MS00My44MywwLTEuMjQsMS0yLjI0LDIuMjQtMi4yNGgzMS44OGMxLjI1LDAsMi4yNCwxLDIuMjQsMi4yNCwxLDE0LjQ1LDEwLjQ2LDIwLjY3LDI3Ljg5LDIwLjY3LDE0LjY5LDAsMjIuNjYtNS43MywyMi42Ni0xNS42OSwwLTI0LjQxLTgzLjkzLS43NS04My45My01NC41NCwwLTI2LjY1LDIxLjQyLTQwLjg0LDU2LjA0LTQwLjg0czU2LjI5LDEzLjQ1LDU4LjUzLDQwLjM1Yy4yNSwxLjI1LS43NSwyLjI0LTEuOTksMi4yNGgtMzAuMzhjLTEuMjQsMC0yLjI0LTEtMi40OS0yLjI0LTEuOTktMTAuOTYtOC45Ny0xNy42OC0yNC4xNi0xNy42OC0xMi4yLDAtMTkuOTMsNC40OC0xOS45MywxNS40NCwwLDI0LjQxLDgzLjkzLS41LDgzLjkzLDU0LjA0LDAsMjYuOS0yNS40LDQyLjA5LTYwLjAyLDQyLjA5WiIvPgogICAgICAgIDxnPgogICAgICAgICAgPHJlY3QgY2xhc3M9ImNscy00IiB5PSIuMDciIHdpZHRoPSIxNzUuNzYiIGhlaWdodD0iMTc1Ljc2IiByeD0iMjguNDYiIHJ5PSIyOC40NiIvPgogICAgICAgICAgPGcgY2xhc3M9ImNscy01Ij4KICAgICAgICAgICAgPHBhdGggY2xhc3M9ImNscy0yIiBkPSJNMTY2Ljc3LDYuMjdsLTM2LjQ4LDIwNS4xOWMtNS4wOSwyOC42LTMyLjQsNDcuNjctNjEsNDIuNThsLTIyMi42OC0zOS41OSIvPgogICAgICAgICAgPC9nPgogICAgICAgIDwvZz4KICAgICAgPC9nPgogICAgPC9nPgogIDwvZz4KPC9zdmc+" alt="Lumos" class="logo-img"><span>© 2026 Lumos × LOI</span></div>
+</div>
+
+</div><!-- end .deck -->
+<canvas id="grain"></canvas>
+<div id="nav-btns" style="position:fixed;bottom:2.8vh;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:0.6rem;z-index:10000;">
+  <button onclick="goTo(cur-1)" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);color:#fff;width:2.4rem;height:2.4rem;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);" onmouseover="this.style.background='rgba(239,199,0,0.18)'" onmouseout="this.style.background='rgba(255,255,255,0.07)'">←</button>
+  <span id="nav-counter" style="font-family:'Work Sans',sans-serif;font-size:0.72rem;color:#5a5855;min-width:3rem;text-align:center;letter-spacing:0.05em;">1 / 7</span>
+  <button onclick="goTo(cur+1)" style="background:rgba(239,199,0,0.12);border:1px solid rgba(239,199,0,0.3);color:#EFC700;width:2.4rem;height:2.4rem;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);" onmouseover="this.style.background='rgba(239,199,0,0.28)'" onmouseout="this.style.background='rgba(239,199,0,0.12)'">→</button>
+</div>
+<script>
+(function(){const c=document.getElementById('grain'),ctx=c.getContext('2d');let f=0;function r(){c.width=innerWidth;c.height=innerHeight;}function g(){const w=c.width,h=c.height,id=ctx.createImageData(w,h),d=id.data;for(let i=0;i<d.length;i+=4){const v=Math.random()*255|0;d[i]=d[i+1]=d[i+2]=v;d[i+3]=255;}ctx.putImageData(id,0,0);}function tick(){if(++f%3===0)g();requestAnimationFrame(tick);}r();g();tick();window.addEventListener('resize',()=>{r();g();});
+})();
+const YT_ID='mlhDdMp4aAE';
+let cur=0;
+const slides=document.querySelectorAll('.slide');
+const total=slides.length;
+const counter=document.getElementById('nav-counter');
+const s7idx=Array.from(slides).findIndex(s=>s.id==='s7');
+function handleYT(idx){const f=document.getElementById('yt-frame');if(!f)return;f.src=idx===s7idx?'https://www.youtube.com/embed/'+YT_ID+'?autoplay=1&mute=0&rel=0&modestbranding=1':'about:blank';}
+function goTo(n){slides[cur].classList.remove('active');cur=((n%total)+total)%total;slides[cur].classList.add('active');counter.textContent=(cur+1)+' / '+total;handleYT(cur);}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ')goTo(cur+1);if(e.key==='ArrowLeft'||e.key==='ArrowUp')goTo(cur-1);if(e.key==='f'||e.key==='F')document.documentElement.requestFullscreen?.();});
+let tx=0;document.addEventListener('touchstart',e=>tx=e.touches[0].clientX,{passive:true});document.addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>45)goTo(cur+(dx<0?1:-1));});
+slides[0].classList.add('active');counter.textContent='1 / '+total;
+</script>
+</body>
+</html>
