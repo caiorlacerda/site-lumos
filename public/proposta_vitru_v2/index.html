@@ -53,14 +53,14 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:#111;color:#fff;fo
 /* Comparison table */
 .ctbl{width:100%;border-collapse:collapse;font-family:var(--fb);}
 .ctbl th{font-size:clamp(.5rem,.65vw,.62rem);font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--y);padding:1em 1.2em;border-bottom:2px solid rgba(239,199,0,.25);text-align:left;white-space:nowrap;background:rgba(239,199,0,.04);}
-.ctbl td{padding:1em 1.2em;font-size:clamp(.72rem,.9vw,.86rem);color:var(--w85);border-bottom:1px solid rgba(255,255,255,.07);vertical-align:middle;}
+.ctbl td{padding:1.2em 1.2em;font-size:clamp(.72rem,.9vw,.86rem);color:var(--w85);border-bottom:1px solid rgba(255,255,255,.07);vertical-align:middle;}
 .ctbl tr:last-child td{border-bottom:none;}
 .ctbl tr.rec-row td{background:rgba(239,199,0,.06);}
 .ctbl tr.rec-row td:first-child{border-left:3px solid var(--y);padding-left:.8em;}
 .strike{text-decoration:line-through;color:var(--w30);font-size:.85em;}
 .new-price{color:var(--y);font-weight:700;font-size:1.08em;}
 /* Rate card */
-.rc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2vw;height:100%;}
+.rc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2vw;height:auto;align-items:start;}
 .rc-section{display:flex;flex-direction:column;gap:.6rem;}
 .rc-head{display:flex;align-items:center;gap:.5rem;margin-bottom:.3rem;}
 .rc-icon{width:28px;height:28px;border-radius:8px;background:rgba(239,199,0,.12);border:1px solid rgba(239,199,0,.25);display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;}
@@ -239,10 +239,10 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:#111;color:#fff;fo
       <div class="a1"><span class="pill">Tabela de Valores Personalizada para Vitru</span></div>
       <div class="a2 dlg" style="margin-top:.6rem;">Produções sob demanda. <span class="acc">Valores fixos.</span></div>
     </div>
-    <div class="rc-grid a3" style="flex:1;min-height:0;">
+    <div class="rc-grid a3">
 
       <!-- Digital -->
-      <div class="rc-section glass" style="padding:1rem 1.1rem;overflow:auto;">
+      <div class="rc-section glass" style="padding:1rem 1.1rem;">
         <div class="rc-head">
           <div class="rc-icon">📱</div>
           <div style="font-family:var(--fd);font-size:.78rem;font-weight:700;letter-spacing:-.01em;">Digital</div>
@@ -258,7 +258,7 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:#111;color:#fff;fo
       </div>
 
       <!-- Filmes -->
-      <div class="rc-section glass" style="padding:1rem 1.1rem;overflow:auto;">
+      <div class="rc-section glass" style="padding:1rem 1.1rem;">
         <div class="rc-head">
           <div class="rc-icon">🎬</div>
           <div style="font-family:var(--fd);font-size:.78rem;font-weight:700;letter-spacing:-.01em;">Filmes</div>
@@ -274,7 +274,7 @@ html,body{width:100vw;height:100vh;overflow:hidden;background:#111;color:#fff;fo
       </div>
 
       <!-- Pacotes -->
-      <div class="rc-section glass-y" style="padding:1rem 1.1rem;overflow:auto;">
+      <div class="rc-section glass-y" style="padding:1rem 1.1rem;">
         <div class="rc-head">
           <div class="rc-icon" style="background:rgba(239,199,0,.2);border-color:rgba(239,199,0,.5);">📦</div>
           <div style="font-family:var(--fd);font-size:.78rem;font-weight:700;letter-spacing:-.01em;color:var(--y);">Pacotes Fechados</div>
