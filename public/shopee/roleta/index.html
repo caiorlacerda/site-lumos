@@ -114,8 +114,7 @@
   .wedge-label {
     position: absolute;
     left: 0; top: 0;
-    width: 120px;
-    margin-left: -60px;
+    width: 130px;
     text-align: center;
     font-family: 'ShopeeRoundedExtraBold', Arial, sans-serif;
     font-weight: 800;
@@ -204,17 +203,25 @@
   const WEDGE_ANGLE = 360 / WEDGE_COUNT;
 
   // --- Geometria do palco (768x512) ---
-  const WHEEL_SIZE = 397;   // roleta.png (1x)
-  const WHEEL_LEFT = 186;
-  const WHEEL_TOP = 24;
-  const WHEEL_CENTER_X = WHEEL_LEFT + WHEEL_SIZE / 2;
-  const WHEEL_CENTER_Y = WHEEL_TOP + WHEEL_SIZE / 2;
-  const LABEL_RADIUS = 118;
+  // roleta.png é um recorte de 397x396 com uma margem de sombra ao redor do
+  // disco: o círculo sólido real mede 366px de diâmetro, centralizado em
+  // (195.5, 195.5) dentro desse recorte (medido no canal alfa da imagem).
+  const WHEEL_SIZE = 397;
+  const WHEEL_CIRCLE_OFFSET = 195.5;
+  const WHEEL_CIRCLE_RADIUS = 183;
+  const WHEEL_LEFT = 189;
+  const WHEEL_TOP = 49;
+  const WHEEL_CENTER_X = WHEEL_LEFT + WHEEL_CIRCLE_OFFSET;
+  const WHEEL_CENTER_Y = WHEEL_TOP + WHEEL_CIRCLE_OFFSET;
+  const LABEL_RADIUS = 124;
 
   const CENTRO_SIZE = 106;
   const PONTEIRO_W = 39;
   const PONTEIRO_H = 51;
-  const PONTEIRO_OVERLAP = 14;
+  // Quanto a ponta do ponteiro deve avançar para dentro do círculo real
+  // (não da caixa recortada, que tem margem de sombra).
+  const PONTEIRO_TIP_INSET = 22;
+  const PONTEIRO_TIP_FROM_BOTTOM = 5; // a ponta fica ~5px acima da base da imagem
 
   const stage = document.getElementById('stage');
   const wheelGroup = document.getElementById('wheelGroup');
@@ -239,7 +246,9 @@
   ponteiro.style.width = PONTEIRO_W + 'px';
   ponteiro.style.height = PONTEIRO_H + 'px';
   ponteiro.style.left = (WHEEL_CENTER_X - PONTEIRO_W / 2) + 'px';
-  const ponteiroTop = WHEEL_TOP + PONTEIRO_OVERLAP - PONTEIRO_H;
+  const circleTop = WHEEL_CENTER_Y - WHEEL_CIRCLE_RADIUS;
+  const tipY = circleTop + PONTEIRO_TIP_INSET;
+  const ponteiroTop = tipY - (PONTEIRO_H - PONTEIRO_TIP_FROM_BOTTOM);
   ponteiro.style.top = ponteiroTop + 'px';
   ponteiro.style.transformOrigin = '50% 15%';
 
