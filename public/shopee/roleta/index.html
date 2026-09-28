@@ -98,8 +98,28 @@
     border-radius: 8px;
   }
 
-  body.display-mode .stage-wrap { width: 100vw; height: 100vh; padding: 0; background: #000; }
+  body.display-mode .stage-wrap {
+    width: 100vw; height: 100vh; padding: 0; background: #000;
+    background-size: cover; background-position: center; background-repeat: no-repeat;
+  }
   body.display-mode #stage { width: 768px; height: 512px; border-radius: 0; }
+
+  #fullscreenBtn {
+    position: fixed;
+    right: 18px; bottom: 18px;
+    z-index: 200;
+    padding: 10px 18px;
+    border-radius: 999px;
+    background: rgba(0,0,0,0.55);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.3);
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    display: none;
+  }
+  body.display-mode #fullscreenBtn { display: inline-flex; align-items: center; gap: 6px; }
+  body.is-fullscreen #fullscreenBtn { display: none; }
 
   body.display-mode .sidebar { display: none !important; }
   body.display-mode .control-shell { display: block; min-height: 100vh; }
@@ -175,6 +195,7 @@
         <img id="ponteiro" src="data:image/png;base64,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" alt="">
         <canvas id="confettiCanvas" width="768" height="512"></canvas>
       </div>
+      <button id="fullscreenBtn" type="button">⛶ Tela cheia</button>
     </div>
   </div>
 
@@ -478,6 +499,29 @@
       window.open(url, '_blank');
     });
   }
+
+  // --- Tela cheia: cobre a tela toda com o fundo.png, jogo centralizado ---
+  const fullscreenBtn = document.getElementById('fullscreenBtn');
+  const stageWrap = document.querySelector('.stage-wrap');
+  const fundoImg = document.getElementById('fundo');
+
+  if (fullscreenBtn) {
+    fullscreenBtn.addEventListener('click', () => {
+      if (stageWrap.style.backgroundImage === '' || !stageWrap.style.backgroundImage) {
+        stageWrap.style.backgroundImage = `url(${fundoImg.src})`;
+      }
+      const el = document.documentElement;
+      const request = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+      if (request) request.call(el).catch((err) => console.error('Erro ao entrar em tela cheia:', err));
+    });
+  }
+
+  document.addEventListener('fullscreenchange', () => {
+    document.body.classList.toggle('is-fullscreen', !!document.fullscreenElement);
+  });
+  document.addEventListener('webkitfullscreenchange', () => {
+    document.body.classList.toggle('is-fullscreen', !!document.webkitFullscreenElement);
+  });
 
   initSync();
 </script>
