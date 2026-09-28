@@ -98,11 +98,8 @@
     border-radius: 8px;
   }
 
-  body.display-mode .stage-wrap {
-    width: 100vw; height: 100vh; padding: 0; background: #000;
-    background-size: cover; background-position: center; background-repeat: no-repeat;
-  }
-  body.display-mode #stage { width: 768px; height: 512px; border-radius: 0; }
+  body.display-mode .stage-wrap { width: 100vw; height: 100vh; padding: 0; background: #000; }
+  body.display-mode #stage { width: 768px; height: 512px; border-radius: 0; will-change: transform; }
 
   #fullscreenBtn {
     position: fixed;
@@ -500,16 +497,19 @@
     });
   }
 
-  // --- Tela cheia: cobre a tela toda com o fundo.png, jogo centralizado ---
+  // --- Tela cheia: a peça toda (fundo + roleta) escala mantendo a mesma
+  // proporção do original (768x512), preenchendo a tela sem esticar nem
+  // duplicar nada — um único fundo, do tamanho que for preciso.
   const fullscreenBtn = document.getElementById('fullscreenBtn');
-  const stageWrap = document.querySelector('.stage-wrap');
-  const fundoImg = document.getElementById('fundo');
+
+  function fitStage() {
+    if (!isDisplayMode) return;
+    const scale = Math.min(window.innerWidth / 768, window.innerHeight / 512);
+    stage.style.transform = `scale(${scale})`;
+  }
 
   if (fullscreenBtn) {
     fullscreenBtn.addEventListener('click', () => {
-      if (stageWrap.style.backgroundImage === '' || !stageWrap.style.backgroundImage) {
-        stageWrap.style.backgroundImage = `url(${fundoImg.src})`;
-      }
       const el = document.documentElement;
       const request = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
       if (request) request.call(el).catch((err) => console.error('Erro ao entrar em tela cheia:', err));
@@ -518,10 +518,14 @@
 
   document.addEventListener('fullscreenchange', () => {
     document.body.classList.toggle('is-fullscreen', !!document.fullscreenElement);
+    fitStage();
   });
   document.addEventListener('webkitfullscreenchange', () => {
     document.body.classList.toggle('is-fullscreen', !!document.webkitFullscreenElement);
+    fitStage();
   });
+  window.addEventListener('resize', fitStage);
+  fitStage();
 
   initSync();
 </script>
